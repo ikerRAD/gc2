@@ -30,6 +30,29 @@ void print_help(){
 }
 
 /**
+*Function to actually free the space of 
+*a 3dObject
+*/
+void better_free(object3d *tofree){
+    vertex *vfree=tofree->vertex_table;
+    free(vfree);
+    GLint i;
+    face *ftbl=tofree->face_table;
+    for(i=0;i<tofree->num_faces;i++){
+        face *facetofree=ftbl+i;
+        free(facetofree->vertex_table);
+    }
+    matrices mtz=tofree->matrix_table;
+    for(i=tofree->num_matrixes;i>0;i--){
+        GLfloat *actual=(mtz.next)+i;
+        free(actual);
+    }
+    free(ftbl);
+    free(tofree);
+}
+
+
+/**
  * @brief Callback function to control the basic keys
  * @param key Key that has been pressed
  * @param x X coordinate of the mouse pointer when the key was pressed
@@ -86,7 +109,7 @@ void keyboard(unsigned char key, int x, int y) {
             /*To remove the first object we just set the first as the current's next*/
             _first_object = _first_object->next;
             /*Once updated the pointer to the first object it is save to free the memory*/
-            free(_selected_object);
+            better_free(_selected_object);
             /*Finally, set the selected to the new first one*/
             _selected_object = _first_object;
         } else {
@@ -97,7 +120,7 @@ void keyboard(unsigned char key, int x, int y) {
             /*Now we bypass the element to erase*/
             auxiliar_object->next = _selected_object->next;
             /*free the memory*/
-            free(_selected_object);
+            better_free(_selected_object);
             /*and update the selection*/
             _selected_object = auxiliar_object;
         }
@@ -120,7 +143,19 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case '+':
-        //INPLEMENTA EZAZU CTRL + + KONBINAZIOAREN FUNTZIOANLITATEA
+        if (glutGetModifiers() == GLUT_ACTIVE_CTRL){
+            /*Decrease the projection plane; compute the new dimensions*/
+            wd=(_ortho_x_max-_ortho_x_min)*KG_STEP_ZOOM;
+            he=(_ortho_y_max-_ortho_y_min)*KG_STEP_ZOOM;
+            /*In order to avoid moving the center of the plane, we get its coordinates*/
+            midx = (_ortho_x_max+_ortho_x_min)/2;
+            midy = (_ortho_y_max+_ortho_y_min)/2;
+            /*The the new limits are set, keeping the center of the plane*/
+            _ortho_x_max = midx + wd/2;
+            _ortho_x_min = midx - wd/2;
+            _ortho_y_max = midy + he/2;
+            _ortho_y_min = midy - he/2;
+        }
         break;
 
     case '?':
