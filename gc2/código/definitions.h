@@ -105,11 +105,12 @@ typedef struct {
  * Structure to store       *
  * a list of matrixes       *
  ****************************/
-typedef struct{
-    GLfloat matriz[16];
-    GLfloat *next;
-} matrices;
 
+struct matrices{
+    GLfloat matriz[16];
+    struct matrices *next;
+};
+typedef struct matrices matrices;
 /****************************
  * Structure to store a     *
  * pile of 3D objects       *
@@ -120,7 +121,7 @@ struct object3d{
     GLint num_faces;                    /* number of faces in the object */
     face *face_table;                   /* table of faces */
     GLint num_matrixes;                 /* number of transformation matrixes*/
-    matrices matrix_table;             /* table of matrixes*/
+    matrices *matrix_table;             /* table of matrixes*/
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
     struct object3d *next;              /* next element in the pile of objects */

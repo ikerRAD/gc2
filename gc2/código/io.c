@@ -42,10 +42,16 @@ void better_free(object3d *tofree){
         face *facetofree=ftbl+i;
         free(facetofree->vertex_table);
     }
-    matrices mtz=tofree->matrix_table;
-    for(i=tofree->num_matrixes;i>0;i--){
-        GLfloat *actual=(mtz.next)+i;
-        free(actual);
+   matrices *mtz=tofree->matrix_table;
+    matrices *aux=mtz;
+    while(aux!=NULL){
+        mtz=aux;       
+        if(aux->next==NULL){
+            //free(mtz);
+            break;
+        }
+        aux=aux->next;
+        //free(mtz);
     }
     free(ftbl);
     free(tofree);
