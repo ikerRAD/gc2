@@ -187,21 +187,5 @@ printf("2 pasada\n");
 
     }
 
-    /*
-     Initialize the matrix
-    */
-    matrices mi;
-    int ik;
-    for(ik=0;ik<16;ik++){
-        if(ik%5==0){//si es multiplo de 5, en este caso, hay que poner uno para que sea identidad
-            mi.matriz[ik]=1.0f;
-        }else{
-            mi.matriz[ik]=0.0f;
-        }
-    }
-    mi.next=NULL;
-    object_ptr->matrix_table=&(mi);
-    object_ptr->num_matrixes=1;
-
     return (0);
 }

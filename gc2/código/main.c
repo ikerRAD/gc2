@@ -5,6 +5,7 @@
 #include "display.h"
 #include "io.h"
 #include "definitions.h"
+#include "transformaciones.h"
 
 /** GLOBAL VARIABLES **/
 
@@ -15,6 +16,10 @@ GLdouble _ortho_z_min,_ortho_z_max;         /*Variables for the control of the o
 
 object3d * _first_object= 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
+
+int modo=TRASLACION;
+int sis_referencia=LOCALES;
+int elemento=OBJETO;
 
 /** GENERAL INITIALIZATION **/
 void initialization (){
@@ -54,9 +59,11 @@ int main(int argc, char** argv) {
     glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glutKeyboardFunc(keyboard);
+    glutSpecialFunc(esp_keyboard);
 
     /* this initialization has to be AFTER the creation of the window */
     initialization();
+    set_transformaciones();
 
     /* start the main loop */
     glutMainLoop();

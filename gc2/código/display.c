@@ -101,7 +101,10 @@ void display(void) {
         }
 
         /* Draw the object; for each face create a new polygon with the corresponding vertices */
-        glLoadIdentity();
+        //glLoadIdentity();
+        glPushMatrix();
+
+        glMultMatrixf(aux_obj->matrix_table->matriz);
         for (f = 0; f < aux_obj->num_faces; f++) {
             glBegin(GL_POLYGON);
             for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
@@ -113,8 +116,10 @@ void display(void) {
             }
             glEnd();
         }
+        glPopMatrix();
         aux_obj = aux_obj->next;
     }
     /*Do the actual drawing*/
     glFlush();
+    glutSwapBuffers();
 }

@@ -11,11 +11,11 @@
 #define KG_WINDOW_X                         50
 #define KG_WINDOW_Y                         50
 
-#define KG_MSSG_SELECT_FILE                 "Idatz ezazu fitxategiaren path-a: "
-#define KG_MSSG_FILENOTFOUND                "Fitxategi hori ez da existitzen!!"
-#define KG_MSSG_INVALIDFILE                 "Arazoren bat egon da fitxategiarekin ..."
-#define KG_MSSG_EMPTYFILE                   "Fitxategia hutsik dago"
-#define KG_MSSG_FILEREAD                    "Fitxategiaren irakurketa buruta"
+#define KG_MSSG_SELECT_FILE                 "Escribe el pah al archivo: "
+#define KG_MSSG_FILENOTFOUND                "Ese archivo no existe!!"
+#define KG_MSSG_INVALIDFILE                 "Ha habido un problema con el fichero ..."
+#define KG_MSSG_EMPTYFILE                   "El fichero está vacío"
+#define KG_MSSG_FILEREAD                    "Fichero leído correctamente"
 
 #define KG_STEP_MOVE                        5.0f
 #define KG_STEP_ROTATE                      10.0f
@@ -56,6 +56,18 @@
 
 #define KG_MAX_DOUBLE                       10E25
 
+/**  ESTADOS  **/
+
+#define TRASLACION                          0
+#define ROTACION                            1
+#define ESCALADO                            2
+
+#define GLOBALES                            0
+#define LOCALES                             1
+
+#define OBJETO                              0
+#define CAMARA                              1
+#define ILUMINACION                         2
 /** STRUCTURES **/
 
 /****************************
@@ -120,7 +132,6 @@ struct object3d{
     vertex *vertex_table;               /* table of vertices */
     GLint num_faces;                    /* number of faces in the object */
     face *face_table;                   /* table of faces */
-    GLint num_matrixes;                 /* number of transformation matrixes*/
     matrices *matrix_table;             /* table of matrixes*/
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
