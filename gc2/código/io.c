@@ -125,75 +125,77 @@ void identity(GLfloat *m){
 void esp_keyboard(int key, int x, int y){
 
     glMatrixMode(GL_MODELVIEW);
-    switch (key) {
+    if(_selected_object!=0) {
+        switch (key) {
 
-    case GLUT_KEY_UP:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(up_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(up_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(up_escalado);
-            }
-        }
-            break;
-    case GLUT_KEY_DOWN:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(down_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(down_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(down_escalado);
-            }
-        }
-        break;
-    case GLUT_KEY_LEFT:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(left_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(left_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(left_escalado);
-            }
-        }
-        break;
-    case GLUT_KEY_RIGHT:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(right_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(right_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(right_escalado);
-            }
-        }
-        break;
-    case GLUT_KEY_PAGE_UP:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(repag_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(repag_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(repag_escalado);
-            }
-        }
-        break;
-    case GLUT_KEY_PAGE_DOWN:
-        if (elemento == OBJETO){
-            if(modo==TRASLACION){
-                aplicar_transformaciones(avpag_traslacion);
-            }else if(modo==ROTACION){
-                aplicar_transformaciones(avpag_rotacion);
-            }else if(modo==ESCALADO) {
-                aplicar_transformaciones(avpag_escalado);
-            }
-        }
-        break;
+            case GLUT_KEY_UP:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(up_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(up_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(up_escalado);
+                    }
+                }
+                break;
+            case GLUT_KEY_DOWN:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(down_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(down_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(down_escalado);
+                    }
+                }
+                break;
+            case GLUT_KEY_LEFT:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(left_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(left_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(left_escalado);
+                    }
+                }
+                break;
+            case GLUT_KEY_RIGHT:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(right_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(right_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(right_escalado);
+                    }
+                }
+                break;
+            case GLUT_KEY_PAGE_UP:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(repag_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(repag_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(repag_escalado);
+                    }
+                }
+                break;
+            case GLUT_KEY_PAGE_DOWN:
+                if (elemento == OBJETO) {
+                    if (modo == TRASLACION) {
+                        aplicar_transformaciones(avpag_traslacion);
+                    } else if (modo == ROTACION) {
+                        aplicar_transformaciones(avpag_rotacion);
+                    } else if (modo == ESCALADO) {
+                        aplicar_transformaciones(avpag_escalado);
+                    }
+                }
+                break;
 
+        }
     }
     /*In case we have do any modification affecting the displaying of the object, we redraw them*/
     glutPostRedisplay();
@@ -250,32 +252,35 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case 9: /* <TAB> */
-        _selected_object = _selected_object->next;
-        /*The selection is circular, thus if we move out of the list we go back to the first element*/
-        if (_selected_object == 0) _selected_object = _first_object;
+        if (_selected_object!=0) {
+            _selected_object = _selected_object->next;
+            /*The selection is circular, thus if we move out of the list we go back to the first element*/
+            if (_selected_object == 0) _selected_object = _first_object;
+        }
         break;
 
     case 127: /* <SUPR> */
         /*Erasing an object depends on whether it is the first one or not*/
-        if (_selected_object == _first_object)
-        {
-            /*To remove the first object we just set the first as the current's next*/
-            _first_object = _first_object->next;
-            /*Once updated the pointer to the first object it is save to free the memory*/
-            better_free(_selected_object);
-            /*Finally, set the selected to the new first one*/
-            _selected_object = _first_object;
-        } else {
-            /*In this case we need to get the previous element to the one we want to erase*/
-            auxiliar_object = _first_object;
-            while (auxiliar_object->next != _selected_object)
-                auxiliar_object = auxiliar_object->next;
-            /*Now we bypass the element to erase*/
-            auxiliar_object->next = _selected_object->next;
-            /*free the memory*/
-            better_free(_selected_object);
-            /*and update the selection*/
-            _selected_object = auxiliar_object;
+        if(_selected_object!=0) {
+            if (_selected_object == _first_object) {
+                /*To remove the first object we just set the first as the current's next*/
+                _first_object = _first_object->next;
+                /*Once updated the pointer to the first object it is save to free the memory*/
+                better_free(_selected_object);
+                /*Finally, set the selected to the new first one*/
+                _selected_object = _first_object;
+            } else {
+                /*In this case we need to get the previous element to the one we want to erase*/
+                auxiliar_object = _first_object;
+                while (auxiliar_object->next != _selected_object)
+                    auxiliar_object = auxiliar_object->next;
+                /*Now we bypass the element to erase*/
+                auxiliar_object->next = _selected_object->next;
+                /*free the memory*/
+                better_free(_selected_object);
+                /*and update the selection*/
+                _selected_object = auxiliar_object;
+            }
         }
         break;
 
@@ -292,7 +297,7 @@ void keyboard(unsigned char key, int x, int y) {
             _ortho_x_min = midx - wd/2;
             _ortho_y_max = midy + he/2;
             _ortho_y_min = midy - he/2;
-        }else if(elemento==OBJETO && modo==ESCALADO){
+        }else if(elemento==OBJETO && modo==ESCALADO && _selected_object!=0){
             aplicar_transformaciones(menos_escalado);
         }
         break;
@@ -310,7 +315,7 @@ void keyboard(unsigned char key, int x, int y) {
             _ortho_x_min = midx - wd/2;
             _ortho_y_max = midy + he/2;
             _ortho_y_min = midy - he/2;
-        }else if(elemento==OBJETO && modo==ESCALADO){
+        }else if(elemento==OBJETO && modo==ESCALADO && _selected_object!=0){
             aplicar_transformaciones(mas_escalado);
         }
         break;
@@ -388,11 +393,12 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case 26 ://ctrl+z
+        if(_selected_object!=0) {
+            if (_selected_object->matrix_table->next != 0) {
+                printf("Deshaciendo...\n");
+                _selected_object->matrix_table = _selected_object->matrix_table->next;
 
-        if (_selected_object->matrix_table->next != 0){
-            printf("Deshaciendo...\n");
-            _selected_object->matrix_table = _selected_object->matrix_table->next;
-
+            }
         }
 
         break;
