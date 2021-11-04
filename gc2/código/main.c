@@ -20,6 +20,8 @@ object3d * _selected_object = 0;            /*Object currently selected*/
 int modo=TRASLACION;
 int sis_referencia=LOCALES;
 int elemento=OBJETO;
+int modo_camara=VUELO;
+int proyeccion=PERSPECTIVA;
 
 /** GENERAL INITIALIZATION **/
 void initialization (){

@@ -68,6 +68,12 @@
 #define OBJETO                              0
 #define CAMARA                              1
 #define ILUMINACION                         2
+
+#define PERSPECTIVA                         0
+#define PARALELA                            1
+
+#define VUELO                               0
+#define ANALISIS                            1
 /** STRUCTURES **/
 
 /****************************

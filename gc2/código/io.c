@@ -15,6 +15,8 @@ extern GLdouble _ortho_z_min,_ortho_z_max;
 extern int modo;
 extern int sis_referencia;
 extern int elemento;
+extern int modo_camara;
+extern int proyeccion;
 
 extern vector3 *up_traslacion;
 extern vector3 *up_rotacion;
