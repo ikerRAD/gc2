@@ -68,12 +68,6 @@
 #define OBJETO                              0
 #define CAMARA                              1
 #define ILUMINACION                         2
-
-#define PERSPECTIVA                         0
-#define PARALELA                            1
-
-#define VUELO                               0
-#define ANALISIS                            1
 /** STRUCTURES **/
 
 /****************************
@@ -145,6 +139,24 @@ struct object3d{
 };
 
 typedef struct object3d object3d;
+
+
+/****************************
+ * Structure to store a     *
+ * pile of cameras       *
+ ****************************/
+struct camera{
+    GLint num_vertices;                 /* number of vertices in the object*/
+    vertex *vertex_table;               /* table of vertices */
+    GLint num_faces;                    /* number of faces in the object */
+    face *face_table;                   /* table of faces */
+    matrices *matrix_table;             /* table of matrixes*/
+    point3 min;                         /* coordinates' lower bounds */
+    point3 max;                         /* coordinates' bigger bounds */
+    struct camera *next;              /* next element in the pile of cameras */
+};
+
+typedef struct camera camera;
 
 
 #endif // DEFINITIONS_H

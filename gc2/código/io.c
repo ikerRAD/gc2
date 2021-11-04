@@ -15,8 +15,6 @@ extern GLdouble _ortho_z_min,_ortho_z_max;
 extern int modo;
 extern int sis_referencia;
 extern int elemento;
-extern int modo_camara;
-extern int proyeccion;
 
 extern vector3 *up_traslacion;
 extern vector3 *up_rotacion;
@@ -57,25 +55,29 @@ void print_help(){
     printf("FUNCIONES PRINCIPALES \n");
     printf("<?>\t\t Visualizar ayuda \n");
     printf("<ESC>\t\t Salir del programa \n");
-    printf("<F>\t\t Cargar un objeto\n");
+    printf("<F,f>\t\t Cargar un objeto\n");
     printf("<TAB>\t\t Elegir un objeto entre los cargados\n");
     printf("<DEL>\t\t Borrar el objeto seleccionado\n");
-    printf("<CTRL + ->\t Aumentar el volumen de visualización\n");
-    printf("<CTRL + +>\t Disminuir el volumen de visualización\n");
+    printf("<CTRL + ->\t Aumentar el volumen de visualización\n");//Eliminar a futuro
+    printf("<CTRL + +>\t Disminuir el volumen de visualización\n");//Eliminar a futuro
+    printf("<K>\t\t Visualizar punto de vista de los objetos (Cambia automáticamente a modo objeto)\n");
+    printf("<k>\t\t Cambiar de cámara\n");
+    printf("<n>\t\t Añadir nueva cámara\n");
+    printf("<P,p>\t\t Cambio de tipo de proyección: perspectiva (por defecto)/ paralela\n");
     printf("\n\n");
     printf("MODOS DE TRANSFORMACIÓN \n");
-    printf("<T>\t\t Modo de traslación (modo por defecto)\n");
-    printf("<R>\t\t Modo de rotación\n");
-    printf("<E>\t\t Modo de escalado\n");
+    printf("<T,t>\t\t Modo de traslación (modo por defecto)\n");
+    printf("<R,r>\t\t Modo de rotación\n");
+    printf("<E,e>\t\t Modo de escalado o cambio de volumen\n");
     printf("\n\n");
     printf("SISTEMA DE REFERENCIA \n");
-    printf("<G>\t\t Transformaciones globales\n");
-    printf("<L>\t\t Transformaciones locales (transformaciones por defecto)\n");
+    printf("<G,g>\t\t Transformaciones globales o modo análisis\n");
+    printf("<L,l>\t\t Transformaciones locales o modo vuelo(por defecto)\n");
     printf("\n\n");
     printf("ELEMENTO A TRANSFORMAR \n");
-    printf("<O>\t\t Transformaciones a objeto (modo por defecto)\n");
-    printf("<C>\t\t Transformaciones a cámara (NO IMPLEMENTADO)\n");
-    printf("<I>\t\t Transformaciones a iluminación (NO IMPLEMENTADO)\n");
+    printf("<O,o>\t\t Transformaciones a objeto (modo por defecto)\n");
+    printf("<C,c>\t\t Transformaciones a cámara\n");
+    printf("<I,i>\t\t Transformaciones a iluminación (NO IMPLEMENTADO)\n");
     printf("\n\n");
     printf("MOVIMIENTOS POSIBLES \n");
     printf("<ARRIBA>\n");
@@ -139,7 +141,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(up_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_DOWN:
                 if (elemento == OBJETO) {
@@ -150,7 +152,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(down_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_LEFT:
                 if (elemento == OBJETO) {
@@ -161,7 +163,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(left_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_RIGHT:
                 if (elemento == OBJETO) {
@@ -172,7 +174,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(right_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_PAGE_UP:
                 if (elemento == OBJETO) {
@@ -183,7 +185,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(repag_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_PAGE_DOWN:
                 if (elemento == OBJETO) {
@@ -194,7 +196,7 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(avpag_escalado);
                     }
-                }
+                }else if(elemento == CAMARA){}
                 break;
 
         }
@@ -217,157 +219,161 @@ void keyboard(unsigned char key, int x, int y) {
     matrices *auxiliar_matrix;
 
     switch (key) {
-    case 'f':
-    case 'F':
-        /*Ask for file*/
-        printf("%s", KG_MSSG_SELECT_FILE);
-        scanf("%s", fname);
-        /*Allocate memory for the structure and read the file*/
-        auxiliar_object = (object3d *) malloc(sizeof (object3d));
-        read = read_wavefront(fname, auxiliar_object);
-        switch (read) {
-        /*Errors in the reading*/
-        case 1:
-            printf("%s: %s\n", fname, KG_MSSG_FILENOTFOUND);
-            break;
-        case 2:
-            printf("%s: %s\n", fname, KG_MSSG_INVALIDFILE);
-            break;
-        case 3:
-            printf("%s: %s\n", fname, KG_MSSG_EMPTYFILE);
-            break;
-        /*Read OK*/
-        case 0:
-            /*Insert the new object in the list*/
+        case 'f':
+        case 'F':
+            /*Ask for file*/
+            printf("%s", KG_MSSG_SELECT_FILE);
+            scanf("%s", fname);
+            /*Allocate memory for the structure and read the file*/
+            auxiliar_object = (object3d *) malloc(sizeof(object3d));
+            read = read_wavefront(fname, auxiliar_object);
+            switch (read) {
+                /*Errors in the reading*/
+                case 1:
+                    printf("%s: %s\n", fname, KG_MSSG_FILENOTFOUND);
+                    break;
+                case 2:
+                    printf("%s: %s\n", fname, KG_MSSG_INVALIDFILE);
+                    break;
+                case 3:
+                    printf("%s: %s\n", fname, KG_MSSG_EMPTYFILE);
+                    break;
+                    /*Read OK*/
+                case 0:
+                    /*Insert the new object in the list*/
 
-            auxiliar_matrix=(matrices *)malloc(sizeof(matrices));
-            identity(auxiliar_matrix->matriz);
-            auxiliar_matrix->next=0;
+                    auxiliar_matrix = (matrices *) malloc(sizeof(matrices));
+                    identity(auxiliar_matrix->matriz);
+                    auxiliar_matrix->next = 0;
 
-            auxiliar_object->next = _first_object;
-            auxiliar_object->matrix_table=auxiliar_matrix;
-            _first_object = auxiliar_object;
-            _selected_object = _first_object;
-            printf("%s\n",KG_MSSG_FILEREAD);
-            break;
-        }
-        break;
-
-    case 9: /* <TAB> */
-        if (_selected_object!=0) {
-            _selected_object = _selected_object->next;
-            /*The selection is circular, thus if we move out of the list we go back to the first element*/
-            if (_selected_object == 0) _selected_object = _first_object;
-        }
-        break;
-
-    case 127: /* <SUPR> */
-        /*Erasing an object depends on whether it is the first one or not*/
-        if(_selected_object!=0) {
-            if (_selected_object == _first_object) {
-                /*To remove the first object we just set the first as the current's next*/
-                _first_object = _first_object->next;
-                /*Once updated the pointer to the first object it is save to free the memory*/
-                better_free(_selected_object);
-                /*Finally, set the selected to the new first one*/
-                _selected_object = _first_object;
-            } else {
-                /*In this case we need to get the previous element to the one we want to erase*/
-                auxiliar_object = _first_object;
-                while (auxiliar_object->next != _selected_object)
-                    auxiliar_object = auxiliar_object->next;
-                /*Now we bypass the element to erase*/
-                auxiliar_object->next = _selected_object->next;
-                /*free the memory*/
-                better_free(_selected_object);
-                /*and update the selection*/
-                _selected_object = auxiliar_object;
+                    auxiliar_object->next = _first_object;
+                    auxiliar_object->matrix_table = auxiliar_matrix;
+                    _first_object = auxiliar_object;
+                    _selected_object = _first_object;
+                    printf("%s\n", KG_MSSG_FILEREAD);
+                    break;
             }
-        }
-        break;
+            break;
 
-    case '-':
-        if (glutGetModifiers() == GLUT_ACTIVE_CTRL){
-            /*Increase the projection plane; compute the new dimensions*/
-            wd=(_ortho_x_max-_ortho_x_min)/KG_STEP_ZOOM;
-            he=(_ortho_y_max-_ortho_y_min)/KG_STEP_ZOOM;
-            /*In order to avoid moving the center of the plane, we get its coordinates*/
-            midx = (_ortho_x_max+_ortho_x_min)/2;
-            midy = (_ortho_y_max+_ortho_y_min)/2;
-            /*The the new limits are set, keeping the center of the plane*/
-            _ortho_x_max = midx + wd/2;
-            _ortho_x_min = midx - wd/2;
-            _ortho_y_max = midy + he/2;
-            _ortho_y_min = midy - he/2;
-        }else if(elemento==OBJETO && modo==ESCALADO && _selected_object!=0){
-            aplicar_transformaciones(menos_escalado);
-        }
-        break;
+        case 9: /* <TAB> */
+            if (_selected_object != 0) {
+                _selected_object = _selected_object->next;
+                /*The selection is circular, thus if we move out of the list we go back to the first element*/
+                if (_selected_object == 0) _selected_object = _first_object;
+            }
+            break;
 
-    case '+':
-        if (glutGetModifiers() == GLUT_ACTIVE_CTRL){
-            /*Decrease the projection plane; compute the new dimensions*/
-            wd=(_ortho_x_max-_ortho_x_min)*KG_STEP_ZOOM;
-            he=(_ortho_y_max-_ortho_y_min)*KG_STEP_ZOOM;
-            /*In order to avoid moving the center of the plane, we get its coordinates*/
-            midx = (_ortho_x_max+_ortho_x_min)/2;
-            midy = (_ortho_y_max+_ortho_y_min)/2;
-            /*The the new limits are set, keeping the center of the plane*/
-            _ortho_x_max = midx + wd/2;
-            _ortho_x_min = midx - wd/2;
-            _ortho_y_max = midy + he/2;
-            _ortho_y_min = midy - he/2;
-        }else if(elemento==OBJETO && modo==ESCALADO && _selected_object!=0){
-            aplicar_transformaciones(mas_escalado);
-        }
-        break;
+        case 127: /* <SUPR> */
+            /*Erasing an object depends on whether it is the first one or not*/
+            if (_selected_object != 0) {
+                if (_selected_object == _first_object) {
+                    /*To remove the first object we just set the first as the current's next*/
+                    _first_object = _first_object->next;
+                    /*Once updated the pointer to the first object it is save to free the memory*/
+                    better_free(_selected_object);
+                    /*Finally, set the selected to the new first one*/
+                    _selected_object = _first_object;
+                } else {
+                    /*In this case we need to get the previous element to the one we want to erase*/
+                    auxiliar_object = _first_object;
+                    while (auxiliar_object->next != _selected_object)
+                        auxiliar_object = auxiliar_object->next;
+                    /*Now we bypass the element to erase*/
+                    auxiliar_object->next = _selected_object->next;
+                    /*free the memory*/
+                    better_free(_selected_object);
+                    /*and update the selection*/
+                    _selected_object = auxiliar_object;
+                }
+            }
+            break;
 
-    case '?':
-        print_help();
-        break;
+        case '-':
+            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
+                /*Increase the projection plane; compute the new dimensions*/
+                wd = (_ortho_x_max - _ortho_x_min) / KG_STEP_ZOOM;
+                he = (_ortho_y_max - _ortho_y_min) / KG_STEP_ZOOM;
+                /*In order to avoid moving the center of the plane, we get its coordinates*/
+                midx = (_ortho_x_max + _ortho_x_min) / 2;
+                midy = (_ortho_y_max + _ortho_y_min) / 2;
+                /*The the new limits are set, keeping the center of the plane*/
+                _ortho_x_max = midx + wd / 2;
+                _ortho_x_min = midx - wd / 2;
+                _ortho_y_max = midy + he / 2;
+                _ortho_y_min = midy - he / 2;
+            } else if (elemento == OBJETO && modo == ESCALADO && _selected_object != 0) {
+                aplicar_transformaciones(menos_escalado);
+            } else if (elemento == CAMARA) {}
+            break;
 
-    case 27: /* <ESC> */
-        exit(0);
-        break;
+        case '+':
+            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
+                /*Decrease the projection plane; compute the new dimensions*/
+                wd = (_ortho_x_max - _ortho_x_min) * KG_STEP_ZOOM;
+                he = (_ortho_y_max - _ortho_y_min) * KG_STEP_ZOOM;
+                /*In order to avoid moving the center of the plane, we get its coordinates*/
+                midx = (_ortho_x_max + _ortho_x_min) / 2;
+                midy = (_ortho_y_max + _ortho_y_min) / 2;
+                /*The the new limits are set, keeping the center of the plane*/
+                _ortho_x_max = midx + wd / 2;
+                _ortho_x_min = midx - wd / 2;
+                _ortho_y_max = midy + he / 2;
+                _ortho_y_min = midy - he / 2;
+            } else if (elemento == OBJETO && modo == ESCALADO && _selected_object != 0) {
+                aplicar_transformaciones(mas_escalado);
+            } else if (elemento == CAMARA) {}
+            break;
 
-    case 't':
-    case 'T':
-        if(modo!=TRASLACION) {
-            printf("Modo cambiado a traslación\n");
-            modo = TRASLACION;
-        }
-        break;
+        case '?':
+            print_help();
+            break;
 
-    case 'r':
-    case 'R':
-        if(modo!=ROTACION) {
-            printf("Modo cambiado a rotación\n");
-            modo = ROTACION;
-        }
-        break;
+        case 27: /* <ESC> */
+            exit(0);
+            break;
 
-    case 'e':
-    case 'E':
-        if(modo!=ESCALADO) {
-            printf("Modo cambiado a escalado\n");
-            modo = ESCALADO;
-        }
-        break;
+        case 't':
+        case 'T':
+            if (modo != TRASLACION) {
+                printf("Modo cambiado a traslación\n");
+                modo = TRASLACION;
+            }
+            break;
 
-    case 'g':
-    case 'G':
-        if(sis_referencia!=GLOBALES) {
-            printf("Sistema de referencia cambiado a global\n");
-            sis_referencia=GLOBALES;
-        }
-        break;
+        case 'r':
+        case 'R':
+            if (modo != ROTACION) {
+                printf("Modo cambiado a rotación\n");
+                modo = ROTACION;
+            }
+            break;
+
+        case 'e':
+        case 'E':
+            if (modo != ESCALADO) {
+                printf("Modo cambiado a escalado o volumen de visión\n");
+                modo = ESCALADO;
+            }
+            break;
+
+        case 'g':
+        case 'G':
+            if (elemento == OBJETO) {
+                if (sis_referencia != GLOBALES) {
+                    printf("Sistema de referencia cambiado a global\n");
+                    sis_referencia = GLOBALES;
+                }
+            } else if (elemento == CAMARA) {}
+            break;
 
     case 'l':
     case 'L':
-        if(sis_referencia!=LOCALES) {
-            printf("Sistema de referencia cambiado a local\n");
-            sis_referencia=LOCALES;
-        }
+        if(elemento==OBJETO){
+            if (sis_referencia != LOCALES) {
+                printf("Sistema de referencia cambiado a local\n");
+                sis_referencia = LOCALES;
+            }
+        }else if (elemento == CAMARA) {}
         break;
 
     case 'o':
@@ -395,7 +401,7 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case 26 ://ctrl+z
-        if(_selected_object!=0) {
+        if(_selected_object!=0 && elemento == OBJETO) {
             if (_selected_object->matrix_table->next != 0) {
                 printf("Deshaciendo...\n");
                 _selected_object->matrix_table = _selected_object->matrix_table->next;
@@ -405,6 +411,19 @@ void keyboard(unsigned char key, int x, int y) {
 
         break;
 
+    case 'K'://K mayus
+        break;
+
+    case 'k': //k minus
+        break;
+
+    case 'n':
+        break;
+
+    case 'p':
+    case 'P':
+
+        break;
 
     default:
         /*In the default case we just print the code of the key. This is usefull to define new cases*/
