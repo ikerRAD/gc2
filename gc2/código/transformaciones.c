@@ -72,34 +72,37 @@ void set_transformaciones(){
 
     mas_escalado=(vector3 *)malloc(sizeof(vector3));
 
-
+    //CORRECCION EN EL ESCALADO, AHORA ESCALADO Y DESESCALADO SE CANCELAN:
+    //Al escalar se multiplica por 5/4 = 1.25
+    //Al desescalar se multiplica por 4/5 = 0.8
+    //1.25*0.8 == 1 ahora un escalado + SIEMPRE cancelará un escalado - y viceversa.
     *up_traslacion = (vector3){.x = 0.0f, .y = 1.0f, .z = 0.0f};
     *up_rotacion = (vector3){.x = 1.0f, .y = 0.0f, .z = 0.0f};
-    *up_escalado = (vector3){.x = 1.0f, .y = 1.5f, .z = 1.0f};
+    *up_escalado = (vector3){.x = 1.0f, .y = 1.25f, .z = 1.0f};
 
     *down_traslacion = (vector3){.x = 0.0f, .y = -1.0f, .z = 0.0f};
     *down_rotacion = (vector3){.x = -1.0f, .y = 0.0f, .z = 0.0f};
-    *down_escalado = (vector3){.x = 1.0f, .y = 0.75f, .z = 1.0f};
+    *down_escalado = (vector3){.x = 1.0f, .y = 0.8f, .z = 1.0f};
 
     *right_traslacion = (vector3){.x = 1.0f, .y = 0.0f, .z = 0.0f};
     *right_rotacion = (vector3){.x = 0.0f, .y = 1.0f, .z = 0.0f};
-    *right_escalado = (vector3){.x = 1.5f, .y = 1.0f, .z = 1.0f};
+    *right_escalado = (vector3){.x = 1.25f, .y = 1.0f, .z = 1.0f};
 
     *left_traslacion = (vector3){.x = -1.0f, .y = 0.0f, .z = 0.0f};
     *left_rotacion = (vector3){.x = 0.0f, .y = -1.0f, .z = 0.0f};
-    *left_escalado = (vector3){.x = 0.75f, .y = 1.0f, .z = 1.0f};
+    *left_escalado = (vector3){.x = 0.8f, .y = 1.0f, .z = 1.0f};
 
     *avpag_traslacion = (vector3){.x = 0.0f, .y = 0.0f, .z = 1.0f};
     *avpag_rotacion = (vector3){.x = 0.0f, .y = 0.0f, .z = 1.0f};
-    *avpag_escalado = (vector3){.x = 1.0f, .y = 1.0f, .z = 1.5f};
+    *avpag_escalado = (vector3){.x = 1.0f, .y = 1.0f, .z = 1.25f};
 
     *repag_traslacion = (vector3){.x = 0.0f, .y = 0.0f, .z = -1.0f};
     *repag_rotacion = (vector3){.x = 0.0f, .y = 0.0f, .z = -1.0f};
-    *repag_escalado = (vector3){.x = 1.0f, .y = 1.0f, .z = 0.75f};
+    *repag_escalado = (vector3){.x = 1.0f, .y = 1.0f, .z = 0.8f};
 
-    *mas_escalado = (vector3){.x = 1.5f, .y = 1.5f, .z = 1.5f};
+    *mas_escalado = (vector3){.x = 1.25f, .y = 1.25f, .z = 1.25f};
 
-    *menos_escalado = (vector3){.x = 0.75f, .y = 0.75f, .z = 0.75f};
+    *menos_escalado = (vector3){.x = 0.8f, .y = 0.8f, .z = 0.8f};
 }
 
 
