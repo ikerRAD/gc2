@@ -149,18 +149,33 @@ typedef struct object3d object3d;
 
 
 /****************************
- * Structure to store a     *
+ * Structures to store a     *
  * pile of cameras       *
  ****************************/
+
+typedef struct projection
+{
+    GLfloat angle;
+    GLfloat near;
+    GLfloat far;
+    GLfloat bottom;
+    GLfloat top;
+    GLfloat left;
+    GLfloat right;
+} projection;
+
 struct camera{
-    GLint num_vertices;                 /* number of vertices in the object*/
+    GLint num_vertices;                 /* number of vertices in the camera*/
     vertex *vertex_table;               /* table of vertices */
     GLint num_faces;                    /* number of faces in the object */
     face *face_table;                   /* table of faces */
-    matrices *matrix_table;             /* table of matrixes*/
+    GLfloat m[16];                      /* matrix of the camera*/
+    GLfloat m_invert[16];               /* inverted matrix of the camera*/
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
-    struct camera *next;              /* next element in the pile of cameras */
+    struct camera *next;                /* next element in the pile of cameras */
+    int type;                           /* projection type*/
+    projection proj;                    /* projection data*/
 };
 
 typedef struct camera camera;

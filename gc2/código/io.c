@@ -16,6 +16,7 @@ extern int modo;
 extern int sis_referencia;
 extern int elemento;
 extern int modo_camara;
+//esto será propio de cada cámara
 extern int proyeccion;
 
 extern vector3 *up_traslacion;
@@ -60,8 +61,6 @@ void print_help(){
     printf("<F,f>\t\t Cargar un objeto\n");
     printf("<TAB>\t\t Elegir un objeto entre los cargados\n");
     printf("<DEL>\t\t Borrar el objeto seleccionado\n");
-    printf("<CTRL + ->\t Aumentar el volumen de visualización\n");//Eliminar a futuro
-    printf("<CTRL + +>\t Disminuir el volumen de visualización\n");//Eliminar a futuro
     printf("<K>\t\t Visualizar punto de vista de los objetos (Cambia automáticamente a modo objeto)\n");
     printf("<k>\t\t Cambiar de cámara\n");
     printf("<n>\t\t Añadir nueva cámara\n");
@@ -365,7 +364,12 @@ void keyboard(unsigned char key, int x, int y) {
                     printf("Sistema de referencia cambiado a global\n");
                     sis_referencia = GLOBALES;
                 }
-            } else if (elemento == CAMARA) {}
+            } else if (elemento == CAMARA) {
+                if (modo_camara != ANALISIS) {
+                    printf("Cámara en modo análisis\n");
+                    modo_camara = ANALISIS;
+                }
+            }
             break;
 
     case 'l':
@@ -375,7 +379,12 @@ void keyboard(unsigned char key, int x, int y) {
                 printf("Sistema de referencia cambiado a local\n");
                 sis_referencia = LOCALES;
             }
-        }else if (elemento == CAMARA) {}
+        }else if (elemento == CAMARA) {
+            if (modo_camara != VUELO) {
+                printf("Cámara en modo vuelo\n");
+                modo_camara = VUELO;
+            }
+        }
         break;
 
     case 'o':
@@ -413,16 +422,16 @@ void keyboard(unsigned char key, int x, int y) {
 
         break;
 
-    case 'K'://K mayus
+    case 'K'://K mayus, visualizar lo que ve el objeto seleccionado
         break;
 
-    case 'k': //k minus
+    case 'k': //k minus, cambiar camara
         break;
 
-    case 'n':
+    case 'n'://nueva camara
         break;
 
-    case 'p':
+    case 'p'://perspectiva (propia de cada cámara)
     case 'P':
 
         break;
