@@ -8,6 +8,9 @@
 extern object3d * _first_object;
 extern object3d * _selected_object;
 
+extern camera  * _first_camera;
+extern camera * _selected_camera;
+
 extern GLdouble _ortho_x_min,_ortho_x_max;
 extern GLdouble _ortho_y_min,_ortho_y_max;
 extern GLdouble _ortho_z_min,_ortho_z_max;
@@ -16,8 +19,7 @@ extern int modo;
 extern int sis_referencia;
 extern int elemento;
 extern int modo_camara;
-//esto será propio de cada cámara
-extern int proyeccion;
+
 
 extern vector3 *up_traslacion;
 extern vector3 *up_rotacion;
@@ -61,17 +63,17 @@ void print_help(){
     printf("<F,f>\t\t Cargar un objeto\n");
     printf("<TAB>\t\t Elegir un objeto entre los cargados\n");
     printf("<DEL>\t\t Borrar el objeto seleccionado\n");
-    printf("<K>\t\t Visualizar punto de vista de los objetos (Cambia automáticamente a modo objeto)\n");
-    printf("<k>\t\t Cambiar de cámara\n");
-    printf("<n>\t\t Añadir nueva cámara\n");
-    printf("<P,p>\t\t Cambio de tipo de proyección: perspectiva (por defecto)/ paralela\n");
+    printf("<K>\t\t Visualizar punto de vista de los objetos (Si vuelves a pulsar K, o cambias de elemento, saldrás de este modo)\n");
+    printf("<k>\t\t Cambiar de cámara.\n");
+    printf("<n>\t\t Añadir nueva cámara.\n");
+    printf("<P,p>\t\t Cambio de tipo de proyección: perspectiva (por defecto)/ paralela.\n");
     printf("\n\n");
     printf("MODOS DE TRANSFORMACIÓN \n");
     printf("<T,t>\t\t Modo de traslación (modo por defecto)\n");
     printf("<R,r>\t\t Modo de rotación\n");
-    printf("<E,e>\t\t Modo de escalado o cambio de volumen\n");
+    printf("<E,e>\t\t Modo de escalado / cambio de volumen\n");
     printf("\n\n");
-    printf("SISTEMA DE REFERENCIA \n");
+    printf("SISTEMA DE REFERENCIA (EN MODO OBJETO) O MODO DE CÁMARA (EN MODO CÁMARA) \n");
     printf("<G,g>\t\t Transformaciones globales o modo análisis\n");
     printf("<L,l>\t\t Transformaciones locales o modo vuelo(por defecto)\n");
     printf("\n\n");
@@ -87,8 +89,8 @@ void print_help(){
     printf("<DERECHA>\n");
     printf("<AVPAG>\n");
     printf("<REPAG>\n");
-    printf("<+> (SOLO EN MODO ESCALADO)\n");
-    printf("<-> (SOLO EN MODO ESCALADO)\n");
+    printf("<+> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN)\n");
+    printf("<-> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN)\n");
 }
 
 /**
@@ -134,7 +136,7 @@ void esp_keyboard(int key, int x, int y){
         switch (key) {
 
             case GLUT_KEY_UP:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(up_traslacion);
                     } else if (modo == ROTACION) {
@@ -145,7 +147,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_DOWN:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(down_traslacion);
                     } else if (modo == ROTACION) {
@@ -156,7 +158,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_LEFT:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(left_traslacion);
                     } else if (modo == ROTACION) {
@@ -167,7 +169,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_RIGHT:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(right_traslacion);
                     } else if (modo == ROTACION) {
@@ -178,7 +180,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_PAGE_UP:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(repag_traslacion);
                     } else if (modo == ROTACION) {
@@ -189,7 +191,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){}
                 break;
             case GLUT_KEY_PAGE_DOWN:
-                if (elemento == OBJETO) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(avpag_traslacion);
                     } else if (modo == ROTACION) {
@@ -215,9 +217,12 @@ void keyboard(unsigned char key, int x, int y) {
 
     char* fname = malloc(sizeof (char)*128); /* Note that scanf adds a null character at the end of the vector*/
     int read = 0;
+
     object3d *auxiliar_object = 0;
     GLdouble wd,he,midx,midy;
+
     matrices *auxiliar_matrix;
+    camera *auxiliar_camera = 0;
 
     switch (key) {
         case 'f':
@@ -255,7 +260,7 @@ void keyboard(unsigned char key, int x, int y) {
                     break;
             }
             break;
-
+        //TODO
         case 9: /* <TAB> */
             if (_selected_object != 0) {
                 _selected_object = _selected_object->next;
@@ -288,39 +293,39 @@ void keyboard(unsigned char key, int x, int y) {
                 }
             }
             break;
-
+        //TODO
         case '-':
-            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
-                /*Increase the projection plane; compute the new dimensions*/
+            /*if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
+                /*Increase the projection plane; compute the new dimensions
                 wd = (_ortho_x_max - _ortho_x_min) / KG_STEP_ZOOM;
                 he = (_ortho_y_max - _ortho_y_min) / KG_STEP_ZOOM;
-                /*In order to avoid moving the center of the plane, we get its coordinates*/
+                /*In order to avoid moving the center of the plane, we get its coordinates
                 midx = (_ortho_x_max + _ortho_x_min) / 2;
                 midy = (_ortho_y_max + _ortho_y_min) / 2;
-                /*The the new limits are set, keeping the center of the plane*/
+                /*The the new limits are set, keeping the center of the plane
                 _ortho_x_max = midx + wd / 2;
                 _ortho_x_min = midx - wd / 2;
                 _ortho_y_max = midy + he / 2;
                 _ortho_y_min = midy - he / 2;
-            } else if (elemento == OBJETO && modo == ESCALADO && _selected_object != 0) {
+            } else*/if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(menos_escalado);
             } else if (elemento == CAMARA) {}
             break;
 
         case '+':
-            if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
-                /*Decrease the projection plane; compute the new dimensions*/
+            /*if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
+                /*Decrease the projection plane; compute the new dimensions
                 wd = (_ortho_x_max - _ortho_x_min) * KG_STEP_ZOOM;
                 he = (_ortho_y_max - _ortho_y_min) * KG_STEP_ZOOM;
-                /*In order to avoid moving the center of the plane, we get its coordinates*/
+                /*In order to avoid moving the center of the plane, we get its coordinates
                 midx = (_ortho_x_max + _ortho_x_min) / 2;
                 midy = (_ortho_y_max + _ortho_y_min) / 2;
-                /*The the new limits are set, keeping the center of the plane*/
+                /*The the new limits are set, keeping the center of the plane
                 _ortho_x_max = midx + wd / 2;
                 _ortho_x_min = midx - wd / 2;
                 _ortho_y_max = midy + he / 2;
                 _ortho_y_min = midy - he / 2;
-            } else if (elemento == OBJETO && modo == ESCALADO && _selected_object != 0) {
+            } else*/if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(mas_escalado);
             } else if (elemento == CAMARA) {}
             break;
@@ -356,7 +361,7 @@ void keyboard(unsigned char key, int x, int y) {
                 modo = ESCALADO;
             }
             break;
-
+        //TODO
         case 'g':
         case 'G':
             if (elemento == OBJETO) {
@@ -421,8 +426,20 @@ void keyboard(unsigned char key, int x, int y) {
         }
 
         break;
+    //TODO
+    case 'K'://K mayus, visualizar lo que ve el objeto seleccionado si hay objeto
 
-    case 'K'://K mayus, visualizar lo que ve el objeto seleccionado
+        if(_selected_object != 0) {
+            if (elemento = !OBJETOCAMARA) {
+                elemento = OBJETOCAMARA;
+                printf("Modo especial, visualizamos lo que el objeto seleccionado. Pulsa K, O, I o C para salir.\n");
+                //hacemos cosas
+            } else {
+                //pasamos a modo objeto
+                elemento = OBJETO;
+            }
+        }
+
         break;
 
     case 'k': //k minus, cambiar camara
@@ -431,8 +448,16 @@ void keyboard(unsigned char key, int x, int y) {
     case 'n'://nueva camara
         break;
 
-    case 'p'://perspectiva (propia de cada cámara)
+    case 'p':// cambiar perspectiva (propia de cada cámara)
     case 'P':
+        //de esta manera si era 0 será 1 y viceversa
+        _selected_camera->type = (_selected_camera->type + 1)%2;
+
+        if(_selected_camera->type == PARALELA){
+            printf("Proyección es paralela.\n");
+        }else{
+            printf("Proyección es perspectiva.\n");
+        }
 
         break;
 

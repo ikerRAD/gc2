@@ -14,14 +14,18 @@ GLdouble _ortho_x_min,_ortho_x_max;         /*Variables for the control of the o
 GLdouble _ortho_y_min ,_ortho_y_max;        /*Variables for the control of the orthographic projection*/
 GLdouble _ortho_z_min,_ortho_z_max;         /*Variables for the control of the orthographic projection*/
 
-object3d * _first_object= 0;                /*List of objects*/
+object3d * _first_object = 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
+camera * _first_camera = 0;
+camera * _selected_camera = 0;
+camera * _object_camera = 0;
 
-int modo=TRASLACION;
-int sis_referencia=LOCALES;
-int elemento=OBJETO;
-int modo_camara=VUELO;
-int proyeccion=PERSPECTIVA;
+projection *global_perspective, *global_ortho;
+
+int modo = TRASLACION;
+int sis_referencia = LOCALES;
+int elemento = OBJETO;
+int modo_camara = VUELO;
 
 /** GENERAL INITIALIZATION **/
 void initialization (){
@@ -66,6 +70,7 @@ int main(int argc, char** argv) {
     /* this initialization has to be AFTER the creation of the window */
     initialization();
     set_transformaciones();
+
 
     /* start the main loop */
     glutMainLoop();

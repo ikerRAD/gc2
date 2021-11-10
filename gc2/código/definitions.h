@@ -11,7 +11,7 @@
 #define KG_WINDOW_X                         50
 #define KG_WINDOW_Y                         50
 
-#define KG_MSSG_SELECT_FILE                 "Escribe el pah al archivo: "
+#define KG_MSSG_SELECT_FILE                 "Escribe el path al archivo: "
 #define KG_MSSG_FILENOTFOUND                "Ese archivo no existe!!"
 #define KG_MSSG_INVALIDFILE                 "Ha habido un problema con el fichero ..."
 #define KG_MSSG_EMPTYFILE                   "El fichero está vacío"
@@ -68,6 +68,7 @@
 #define OBJETO                              0
 #define CAMARA                              1
 #define ILUMINACION                         2
+#define OBJETOCAMARA                        3
 
 #define PERSPECTIVA                         0
 #define PARALELA                            1
@@ -170,7 +171,7 @@ struct camera{
     GLint num_faces;                    /* number of faces in the object */
     face *face_table;                   /* table of faces */
     GLfloat m[16];                      /* matrix of the camera*/
-    GLfloat m_invert[16];               /* inverted matrix of the camera*/
+    GLfloat minv[16];                   /* inverted matrix of the camera*/
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
     struct camera *next;                /* next element in the pile of cameras */

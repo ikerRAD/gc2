@@ -5,6 +5,7 @@
 #include "definitions.h"
 
 #define MAXLINE 200
+#define CAMERAPATH "camara.obj"
 
 /*
  * Auxiliar function to process each line of the file
@@ -188,4 +189,24 @@ printf("2 pasada\n");
     }
 
     return (0);
+}
+
+/**
+ * Function to load the whole representation of a new camera
+ * we use read_wavefront() function to reuse code and not copying the
+ * whole process again
+ */
+void load_camera_representation(camera *cam){
+    object3d auxiliar_object;
+    read_wavefront(CAMERAPATH, &auxiliar_object);
+
+    /*There is not error treatment because camera.obj will always be there*/
+
+    cam->face_table = auxiliar_object.face_table;
+    cam->num_faces = auxiliar_object.num_faces;
+    cam->vertex_table = auxiliar_object.vertex_table;
+    cam->num_vertices = auxiliar_object.num_vertices;
+    cam->max = auxiliar_object.max;
+    cam->min = auxiliar_object.min;
+
 }
