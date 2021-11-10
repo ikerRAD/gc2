@@ -9,9 +9,14 @@
 extern object3d *_first_object;
 extern object3d *_selected_object;
 
+extern camera  * _first_camera;
+extern camera * _selected_camera;
+extern camera * _object_camera;
+
 extern int modo;
 extern int sis_referencia;
 extern int elemento;
+extern int modo_camara;
 
 vector3 *up_traslacion;
 vector3 *up_rotacion;
@@ -109,18 +114,29 @@ void set_transformaciones(){
 void transformation_matrix(){
 
     glMatrixMode(GL_MODELVIEW);
-    if (elemento == OBJETO){
+    if (elemento == OBJETO || elemento == OBJETOCAMARA){
         if (sis_referencia == LOCALES)
             glLoadMatrixf(_selected_object->matrix_table->matriz);
         else
             glLoadIdentity();
+    }else if(elemento == CAMARA){
+
+        if(modo_camara == VUELO){
+            glLoadMatrixf(_selected_camera->minv);
+        }else{
+            glLoadIdentity();
+            glTranslatef(-_selected_object->matrix_table->matriz[12],
+                         -_selected_object->matrix_table->matriz[13],
+                         -_selected_object->matrix_table->matriz[14]);
+        }
+
     }
 }
 
 void set_transformation_matrix(){
 
     GLfloat m_aux[16];
-    if (elemento == OBJETO){
+    if (elemento == OBJETO || elemento == OBJETOCAMARA){
         matrices *n_ptr = (matrices*)malloc(sizeof(matrices));
         if (sis_referencia == LOCALES) {
             glGetFloatv(GL_MODELVIEW_MATRIX, n_ptr->matriz);
@@ -132,6 +148,18 @@ void set_transformation_matrix(){
         n_ptr->next = _selected_object->matrix_table;
         _selected_object->matrix_table = n_ptr;
 
+    }else if(elemento == CAMARA){
+        if(modo_camara == VUELO){
+            glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
+            matriz_inversa(_selected_camera);
+        }else{
+            glTranslatef(_selected_object->matrix_table->matriz[12],
+                         _selected_object->matrix_table->matriz[12],
+                         _selected_object->matrix_table->matriz[12]);
+            glMultMatrixf(_selected_camera->minv);
+            glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
+            matriz_inversa(_selected_camera);
+        }
     }
 }
 
@@ -156,4 +184,14 @@ void aplicar_transformaciones(vector3 *value){
     }
 
     set_transformation_matrix();
+}
+
+GLfloat distancia_camara_objeto(){
+    GLfloat px, py, pz;
+
+    px = _selected_object->matrix_table->matriz[12] - _selected_camera->minv[12];
+    py = _selected_object->matrix_table->matriz[13] - _selected_camera->minv[13];
+    pz = _selected_object->matrix_table->matriz[14] - _selected_camera->minv[14];
+
+    return sqrt(pow(px, 2) + pow(py, 2) + pow(pz, 2));
 }

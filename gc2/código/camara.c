@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "load_obj.h"
 
 extern projection *global_perspective, *global_ortho;
 
@@ -13,6 +14,11 @@ extern camera *_first_camera;
 extern camera *_selected_camera;
 extern camera *_object_camera;
 
+extern object3d *_selected_object;
+
+/**
+ * Método para inicializar los valores por defecto de proyección.
+ */
 void set_camera_projection(){
     global_perspective = (projection*)malloc(sizeof(projection));
     global_ortho = (projection*)malloc(sizeof(projection));
@@ -32,6 +38,13 @@ void set_camera_projection(){
     global_ortho->far = 100.0;
 }
 
+/**
+ * Método para crear una cámara
+ * @param camera_pos posición de la cámara
+ * @param camera_front punto de mira de la cámara
+ * @param camera_up verticalidad de la cámara
+ * @param cam cámara a crear
+ */
 void create_camera(vector3 camera_pos, vector3 camera_front, vector3 camera_up, camera *cam){
 
     cam->next = 0;
@@ -68,12 +81,19 @@ void create_camera(vector3 camera_pos, vector3 camera_front, vector3 camera_up, 
 
 }
 
+/**
+ * método para añadir una nueva cámara a la lista
+ * @param l_camera cámara a añadir
+ */
 void add_camera_list(camera *l_camera){
     l_camera->next = _first_camera;
     _first_camera = l_camera;
     _selected_camera = _first_camera;
 }
 
+/**
+ * Método para inicializar todas las cámaras
+ */
 void default_cameras(){
 
     set_camera_projection();
@@ -95,6 +115,7 @@ void default_cameras(){
     cam_up.z = 0.0f;
 
     create_camera(cam_pos, cam_front, cam_up, aux);
+    load_camera_representation(aux);
 
     _first_camera = (camera*)malloc(sizeof(camera));
     _first_camera = aux;
@@ -102,6 +123,9 @@ void default_cameras(){
     _selected_camera = _first_camera;
 }
 
+/**
+ * Método de cambio de cámara, pasa a la siguiente de manera circular
+ */
 void cambiar_camara(){
 
     if(_selected_camera->next == 0){
@@ -111,6 +135,9 @@ void cambiar_camara(){
     }
 }
 
+/**
+ * Método para crear una nueva cámara y añadirla, esta cámara se puede encontar en la cámara seleccionada
+ */
 void add_camera(){
     camera *aux = (camera*)malloc(sizeof(camera));
 
@@ -130,6 +157,7 @@ void add_camera(){
     cam_up.z = 0.0f;
 
     create_camera(pos, front, up, aux);
+    load_camera_representation(aux);
 
     add_camera_list(aux);
 
@@ -176,6 +204,9 @@ void add_camera_mode_obj(object3d *obj)
 {
     camera * objcam = (camera*)malloc(sizeof(camera));
 
+    objcam->proj = global_perspective;
+    objcam->type = PERSPECTIVA;
+
     objcam->minv[0] = obj->matrix_table->matriz[0];
     objcam->minv[1] = obj->matrix_table->matriz[4];
     objcam->minv[2] = -obj->matrix_table->matriz[8];
@@ -202,7 +233,10 @@ void add_camera_mode_obj(object3d *obj)
 }
 
 
-
+/**
+ * Método que centra una cámara a un objeto haciendo que lo mire
+ * @param obj objeto a centrar
+ */
 void centre_camera_to_obj(object3d *obj){
     camera *aux = (camera*)malloc(sizeof(camera));
 
@@ -217,21 +251,32 @@ void centre_camera_to_obj(object3d *obj){
     aux->proj = _selected_camera->proj;
     _selected_camera = aux;
 }
-//TODO
+/**
+ * Método para moverse en modo análisis, realiza los cálculos necesarios para rotar positiva o negativamente sobre la x o y
+ * @param x sentido y módulo de la rotación centrada al objeto sobre el eje x
+ * @param y sentido y módulo de la rotación centrada al objeto sobre el eje y
+ */
 void modo_analisis(int x, int y){
     GLfloat px, py, pz, distance;
     GLfloat m_minus[16], m_plus[16], m_rot[16];
 
-    px = _selected_object->list_matrix->m[12] - _selected_camera->current_camera->m_invert[12];
-    py = _selected_object->list_matrix->m[13] - _selected_camera->current_camera->m_invert[13];
-    pz = _selected_object->list_matrix->m[14] - _selected_camera->current_camera->m_invert[14];
+    px = _selected_object->matrix_table->matriz[12] - _selected_camera->minv[12];
+    py = _selected_object->matrix_table->matriz[13] - _selected_camera->minv[13];
+    pz = _selected_object->matrix_table->matriz[14] - _selected_camera->minv[14];
 
     distance = sqrt(pow(px, 2) + pow(py, 2) + pow(pz, 2));
 
-    identity(m_minus); identity(m_plus); identity(m_rot);
+    identity(m_minus);
+    identity(m_plus);
+    identity(m_rot);
 
-    m_minus[12] = 0; m_minus[13] = 0; m_minus[14] = -distance;
-    m_plus[12] = 0; m_plus[13] = 0; m_plus[14] = distance;
+    m_minus[12] = 0;
+    m_minus[13] = 0;
+    m_minus[14] = -distance;
+
+    m_plus[12] = 0;
+    m_plus[13] = 0;
+    m_plus[14] = distance;
 
     if (x != 0){
         m_rot[5] = cos(x * KG_STEP_ROTATE * M_PI / 180.0);
@@ -248,13 +293,17 @@ void modo_analisis(int x, int y){
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
-    glMultMatrixf(m_minus); glMultMatrixf(m_rot); glMultMatrixf(m_plus);
+    glMultMatrixf(m_minus);
+    glMultMatrixf(m_rot);
+    glMultMatrixf(m_plus);
+
     glGetFloatv(GL_MODELVIEW_MATRIX, m_rot);
 
     glLoadIdentity();
-    glMultMatrixf(_selected_camera->current_camera->m_invert);
+    glMultMatrixf(_selected_camera->minv);
     glMultMatrixf(m_rot);
-    glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->current_camera->m_invert);
+    glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
 
     matriz_inversa(_selected_camera);
+
 }

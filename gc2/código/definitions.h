@@ -176,7 +176,7 @@ struct camera{
     point3 max;                         /* coordinates' bigger bounds */
     struct camera *next;                /* next element in the pile of cameras */
     int type;                           /* projection type*/
-    projection proj;                    /* projection data*/
+    projection *proj;                    /* projection data*/
 };
 
 typedef struct camera camera;

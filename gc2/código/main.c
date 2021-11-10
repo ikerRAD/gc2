@@ -6,6 +6,7 @@
 #include "io.h"
 #include "definitions.h"
 #include "transformaciones.h"
+#include "camara.h"
 
 /** GLOBAL VARIABLES **/
 
@@ -16,9 +17,10 @@ GLdouble _ortho_z_min,_ortho_z_max;         /*Variables for the control of the o
 
 object3d * _first_object = 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
-camera * _first_camera = 0;
-camera * _selected_camera = 0;
-camera * _object_camera = 0;
+
+camera * _first_camera = 0;                 /*List of cameras*/
+camera * _selected_camera = 0;              /*Camera currently selected*/
+camera * _object_camera = 0;                /*Special object camera*/
 
 projection *global_perspective, *global_ortho;
 
@@ -70,6 +72,7 @@ int main(int argc, char** argv) {
     /* this initialization has to be AFTER the creation of the window */
     initialization();
     set_transformaciones();
+    default_cameras();
 
 
     /* start the main loop */

@@ -3,6 +3,7 @@
 #include <GL/glut.h>
 #include <stdio.h>
 #include "transformaciones.h"
+#include "camara.h"
 
 
 extern object3d * _first_object;
@@ -10,6 +11,7 @@ extern object3d * _selected_object;
 
 extern camera  * _first_camera;
 extern camera * _selected_camera;
+extern camera * _object_camera;
 
 extern GLdouble _ortho_x_min,_ortho_x_max;
 extern GLdouble _ortho_y_min,_ortho_y_max;
@@ -130,6 +132,7 @@ void identity(GLfloat *m){
  * @param y Y coordinate of the mouse pointer when the key was pressed
  */
 void esp_keyboard(int key, int x, int y){
+    vector3 *camara;
 
     glMatrixMode(GL_MODELVIEW);
     if(_selected_object!=0) {
@@ -144,7 +147,27 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(up_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if(modo_camara == VUELO){
+                            modo = ROTACION;
+                            aplicar_transformaciones(up_rotacion);
+                            modo = TRASLACION;
+                        }else{
+                            modo_analisis(-1,0);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if(modo_camara == VUELO){
+                            aplicar_transformaciones(up_rotacion);
+                        }else{
+                            modo_analisis(-1,0);
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->proj->top -= 0.01;
+                        _selected_camera->proj->bottom += 0.01;
+                    }
+                }
                 break;
             case GLUT_KEY_DOWN:
                 if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
@@ -155,7 +178,27 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(down_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if(modo_camara == VUELO){
+                            modo = ROTACION;
+                            aplicar_transformaciones(down_rotacion);
+                            modo = TRASLACION;
+                        }else{
+                            modo_analisis(1,0);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if(modo_camara == VUELO){
+                            aplicar_transformaciones(down_rotacion);
+                        }else{
+                            modo_analisis(1,0);
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->proj->top += 0.01;
+                        _selected_camera->proj->bottom -= 0.01;
+                    }
+                }
                 break;
             case GLUT_KEY_LEFT:
                 if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
@@ -166,7 +209,27 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(left_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if(modo_camara == VUELO){
+                            modo = ROTACION;
+                            aplicar_transformaciones(left_rotacion);
+                            modo = TRASLACION;
+                        }else{
+                            modo_analisis(0,-1);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if(modo_camara == VUELO){
+                            aplicar_transformaciones(left_rotacion);
+                        }else{
+                            modo_analisis(0,-1);
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->proj->left += 0.01;
+                        _selected_camera->proj->right -= 0.01;
+                    }
+                }
                 break;
             case GLUT_KEY_RIGHT:
                 if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
@@ -177,7 +240,27 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(right_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if(modo_camara == VUELO){
+                            modo = ROTACION;
+                            aplicar_transformaciones(right_rotacion);
+                            modo = TRASLACION;
+                        }else{
+                            modo_analisis(0,1);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if(modo_camara == VUELO){
+                            aplicar_transformaciones(right_rotacion);
+                        }else{
+                            modo_analisis(0,1);
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->proj->left -= 0.01;
+                        _selected_camera->proj->right += 0.01;
+                    }
+                }
                 break;
             case GLUT_KEY_PAGE_UP:
                 if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
@@ -188,7 +271,36 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(repag_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if (modo_camara == ANALISIS){
+                            if (distancia_camara_objeto() > 0.5){
+                                camara = (vector3 *)malloc(sizeof(vector3));
+                                *camara = (vector3){
+                                        .x = -_selected_camera->current_camera->m_invert[8],
+                                        .y = -_selected_camera->current_camera->m_invert[9],
+                                        .z = -_selected_camera->current_camera->m_invert[10]
+                                };
+                                aplicar_transformaciones(camara);
+                            }
+                        } else {
+                            aplicar_transformaciones(repag_values);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if (modo_camara == VUELO){
+                            aplicar_transformaciones(repag_values);
+                        }else{
+                            modo_camara = VUELO;
+                            aplicar_transformaciones(repag_values);
+                            modo_camara = ANALISIS;
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->current_camera->proj->near -= 0.01;
+                        _selected_camera->current_camera->proj->far -= 0.01;
+
+                    }
+                }
                 break;
             case GLUT_KEY_PAGE_DOWN:
                 if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
@@ -199,7 +311,35 @@ void esp_keyboard(int key, int x, int y){
                     } else if (modo == ESCALADO) {
                         aplicar_transformaciones(avpag_escalado);
                     }
-                }else if(elemento == CAMARA){}
+                }else if(elemento == CAMARA){
+                    if (modo == TRASLACION){
+                        if (modo_camara == ANALISIS){
+                            if (distancia_camara_objeto() < 1000){
+                                camara = (vector3 *)malloc(sizeof(vector3));
+                                *camara = (vector3){
+                                        .x = _selected_camera->current_camera->m_invert[8],
+                                        .y = _selected_camera->current_camera->m_invert[9],
+                                        .z = _selected_camera->current_camera->m_invert[10]
+                                };
+                                aplicar_transformaciones(camara);
+                            }
+                        } else {
+                            aplicar_transformaciones(avpag_values);
+                        }
+
+                    }else if(modo == ROTACION){
+                        if (modo_camara == VUELO){
+                            aplicar_transformaciones(avpag_values);
+                        }else{
+                            modo_camara = VUELO;
+                            aplicar_transformaciones(avpag_values);
+                            modo_camara = ANALISIS;
+                        }
+                    }else if(modo == ESCALADO){
+                        _selected_camera->current_camera->proj->near += 0.01;
+                        _selected_camera->current_camera->proj->far += 0.01;
+                    }
+                }
                 break;
 
         }
@@ -256,6 +396,14 @@ void keyboard(unsigned char key, int x, int y) {
                     auxiliar_object->matrix_table = auxiliar_matrix;
                     _first_object = auxiliar_object;
                     _selected_object = _first_object;
+
+                    //En caso de que la estemos visualizando lo que ve el objeto seleccionado o que estemos en modo análisis
+                    if(elemento == CAMARA && modo_camara = ANALISIS){
+                        centre_camera_to_obj(_selected_object);
+                    }else if (elemento == OBJETOCAMARA){
+                        add_camera_mode_obj(_selected_object);
+                    }
+
                     printf("%s\n", KG_MSSG_FILEREAD);
                     break;
             }
@@ -266,6 +414,13 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_object = _selected_object->next;
                 /*The selection is circular, thus if we move out of the list we go back to the first element*/
                 if (_selected_object == 0) _selected_object = _first_object;
+
+                if(elemento == CAMARA && modo_camara = ANALISIS){
+                    centre_camera_to_obj(_selected_object);
+                }else if (elemento == OBJETOCAMARA){
+                    add_camera_mode_obj(_selected_object);
+                }
+
             }
             break;
 
@@ -279,6 +434,8 @@ void keyboard(unsigned char key, int x, int y) {
                     better_free(_selected_object);
                     /*Finally, set the selected to the new first one*/
                     _selected_object = _first_object;
+
+
                 } else {
                     /*In this case we need to get the previous element to the one we want to erase*/
                     auxiliar_object = _first_object;
@@ -290,44 +447,62 @@ void keyboard(unsigned char key, int x, int y) {
                     better_free(_selected_object);
                     /*and update the selection*/
                     _selected_object = auxiliar_object;
+
                 }
+
+                if(_selected_object == 0){
+
+                    /*Necesitamos asegurarnos de que estos modos solo se ejecutan si hay objetos*/
+                    if(elemento == CAMARA && modo_camara = ANALISIS){
+                        modo_camara = VUELO;
+                    }else if (elemento == OBJETOCAMARA){
+                        elemento = OBJETO;
+                    }
+
+                }else{
+
+                    if(elemento == CAMARA && modo_camara = ANALISIS){
+                        centre_camera_to_obj(_selected_object);
+                    }else if (elemento == OBJETOCAMARA){
+                        add_camera_mode_obj(_selected_object);
+                    }
+                }
+
             }
             break;
-        //TODO
+
         case '-':
-            /*if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
-                /*Increase the projection plane; compute the new dimensions
-                wd = (_ortho_x_max - _ortho_x_min) / KG_STEP_ZOOM;
-                he = (_ortho_y_max - _ortho_y_min) / KG_STEP_ZOOM;
-                /*In order to avoid moving the center of the plane, we get its coordinates
-                midx = (_ortho_x_max + _ortho_x_min) / 2;
-                midy = (_ortho_y_max + _ortho_y_min) / 2;
-                /*The the new limits are set, keeping the center of the plane
-                _ortho_x_max = midx + wd / 2;
-                _ortho_x_min = midx - wd / 2;
-                _ortho_y_max = midy + he / 2;
-                _ortho_y_min = midy - he / 2;
-            } else*/if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
+            if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(menos_escalado);
-            } else if (elemento == CAMARA) {}
+            } else if (elemento == CAMARA) {
+                wd = (_selected_camera->proj->right - _selected_camera->proj->left) / KG_STEP_ZOOM;
+                he = (_selected_camera->proj->bottom - _selected_camera->proj->top) / KG_STEP_ZOOM;
+
+                midx = (_selected_camera->proj->right + _selected_camera->proj->left) / 2;
+                midy = (_selected_camera->proj->bottom + _selected_camera->proj->top) / 2;
+
+                _selected_camera->proj->right = (midx + wd) / 2;
+                _selected_camera->proj->left = (midx - wd) / 2;
+                _selected_camera->proj->bottom = (midy + he) / 2;
+                _selected_camera->proj->top = (midy - he) / 2;
+            }
             break;
 
         case '+':
-            /*if (glutGetModifiers() == GLUT_ACTIVE_CTRL) {
-                /*Decrease the projection plane; compute the new dimensions
-                wd = (_ortho_x_max - _ortho_x_min) * KG_STEP_ZOOM;
-                he = (_ortho_y_max - _ortho_y_min) * KG_STEP_ZOOM;
-                /*In order to avoid moving the center of the plane, we get its coordinates
-                midx = (_ortho_x_max + _ortho_x_min) / 2;
-                midy = (_ortho_y_max + _ortho_y_min) / 2;
-                /*The the new limits are set, keeping the center of the plane
-                _ortho_x_max = midx + wd / 2;
-                _ortho_x_min = midx - wd / 2;
-                _ortho_y_max = midy + he / 2;
-                _ortho_y_min = midy - he / 2;
-            } else*/if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
+            if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(mas_escalado);
-            } else if (elemento == CAMARA) {}
+            } else if (elemento == CAMARA) {
+                wd = (_selected_camera->proj->right - _selected_camera->proj->left) * KG_STEP_ZOOM;
+                he = (_selected_camera->proj->bottom - _selected_camera->proj->top) * KG_STEP_ZOOM;
+
+                midx = (_selected_camera->proj->right + _selected_camera->proj->left) / 2;
+                midy = (_selected_camera->proj->bottom + _selected_camera->proj->top) / 2;
+
+                _selected_camera->proj->right = (midx + wd) / 2;
+                _selected_camera->proj->left = (midx - wd) / 2;
+                _selected_camera->proj->bottom = (midy + he) / 2;
+                _selected_camera->proj->top = (midy - he) / 2;
+            }
             break;
 
         case '?':
@@ -370,9 +545,15 @@ void keyboard(unsigned char key, int x, int y) {
                     sis_referencia = GLOBALES;
                 }
             } else if (elemento == CAMARA) {
+                //solo entramos en este modo si hay un objeto al que analizar
                 if (modo_camara != ANALISIS) {
-                    printf("Cámara en modo análisis\n");
-                    modo_camara = ANALISIS;
+                    if(_selected_object != 0) {
+                        printf("Cámara en modo análisis\n");
+                        modo_camara = ANALISIS;
+                        centre_camera_to_obj(_selected_object);
+                    }else{
+                        printf("PRIMERO CARGA UN OBJETO!!!");
+                    }
                 }
             }
             break;
@@ -405,6 +586,15 @@ void keyboard(unsigned char key, int x, int y) {
         if(elemento!=CAMARA) {
             printf("Elemento cambiado a cámara\n");
             elemento=CAMARA;
+            if(modo_camara == ANALISIS){
+                if(_selected_object != 0) {
+                    centre_camera_to_obj(_selected_object);
+                }else{
+                    modo_camara = VUELO;
+                }
+
+            }
+
         }
         break;
 
@@ -426,14 +616,17 @@ void keyboard(unsigned char key, int x, int y) {
         }
 
         break;
-    //TODO
+
     case 'K'://K mayus, visualizar lo que ve el objeto seleccionado si hay objeto
 
         if(_selected_object != 0) {
             if (elemento = !OBJETOCAMARA) {
                 elemento = OBJETOCAMARA;
                 printf("Modo especial, visualizamos lo que el objeto seleccionado. Pulsa K, O, I o C para salir.\n");
-                //hacemos cosas
+
+                add_camera_mode_obj(_selected_object);
+
+
             } else {
                 //pasamos a modo objeto
                 elemento = OBJETO;
@@ -441,11 +634,19 @@ void keyboard(unsigned char key, int x, int y) {
         }
 
         break;
-
+    //TODO
     case 'k': //k minus, cambiar camara
+        cambiar_camara();
+        if(modo_camara == ANALISIS && _selected_object != 0){
+            centre_camera_to_obj(_selected_object);
+        }
         break;
 
     case 'n'://nueva camara
+        add_camera();
+        if(modo_camara == ANALISIS && _selected_object != 0){
+            centre_camera_to_obj(_selected_object);
+        }
         break;
 
     case 'p':// cambiar perspectiva (propia de cada cámara)
