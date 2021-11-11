@@ -343,6 +343,11 @@ void esp_keyboard(int key, int x, int y){
                 break;
 
         }
+        /*Si el objeto es la cámara*/
+        if(elemento == OBJETOCAMARA){
+            add_camera_mode_obj(_selected_object);
+        }
+
     }
     /*In case we have do any modification affecting the displaying of the object, we redraw them*/
     glutPostRedisplay();
@@ -408,7 +413,7 @@ void keyboard(unsigned char key, int x, int y) {
                     break;
             }
             break;
-        //TODO
+
         case 9: /* <TAB> */
             if (_selected_object != 0) {
                 _selected_object = _selected_object->next;
@@ -474,6 +479,9 @@ void keyboard(unsigned char key, int x, int y) {
         case '-':
             if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(menos_escalado);
+                if(elemento == OBJETOCAMARA) {
+                    add_camera_mode_obj(_selected_object);
+                }
             } else if (elemento == CAMARA) {
                 wd = (_selected_camera->proj->right - _selected_camera->proj->left) / KG_STEP_ZOOM;
                 he = (_selected_camera->proj->bottom - _selected_camera->proj->top) / KG_STEP_ZOOM;
@@ -491,6 +499,9 @@ void keyboard(unsigned char key, int x, int y) {
         case '+':
             if ((elemento == OBJETO || elemento == OBJETOCAMARA) && modo == ESCALADO && _selected_object != 0) {
                 aplicar_transformaciones(mas_escalado);
+                if (elemento == OBJETOCAMARA) {
+                    add_camera_mode_obj(_selected_object);
+                }
             } else if (elemento == CAMARA) {
                 wd = (_selected_camera->proj->right - _selected_camera->proj->left) * KG_STEP_ZOOM;
                 he = (_selected_camera->proj->bottom - _selected_camera->proj->top) * KG_STEP_ZOOM;
@@ -536,10 +547,10 @@ void keyboard(unsigned char key, int x, int y) {
                 modo = ESCALADO;
             }
             break;
-        //TODO
+
         case 'g':
         case 'G':
-            if (elemento == OBJETO) {
+            if (elemento == OBJETO || elemento == OBJETOCAMARA) {
                 if (sis_referencia != GLOBALES) {
                     printf("Sistema de referencia cambiado a global\n");
                     sis_referencia = GLOBALES;
@@ -560,7 +571,7 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 'l':
     case 'L':
-        if(elemento==OBJETO){
+        if(elemento==OBJETO || elemento == OBJETOCAMARA){
             if (sis_referencia != LOCALES) {
                 printf("Sistema de referencia cambiado a local\n");
                 sis_referencia = LOCALES;
@@ -607,11 +618,13 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case 26 ://ctrl+z
-        if(_selected_object!=0 && elemento == OBJETO) {
+        if(_selected_object!=0) {
             if (_selected_object->matrix_table->next != 0) {
                 printf("Deshaciendo...\n");
                 _selected_object->matrix_table = _selected_object->matrix_table->next;
-
+                if(elemento == OBJETOCAMARA){
+                    add_camera_mode_obj(_selected_object);
+                }
             }
         }
 
@@ -634,7 +647,7 @@ void keyboard(unsigned char key, int x, int y) {
         }
 
         break;
-    //TODO
+
     case 'k': //k minus, cambiar camara
         cambiar_camara();
         if(modo_camara == ANALISIS && _selected_object != 0){

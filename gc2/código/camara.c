@@ -99,6 +99,10 @@ void default_cameras(){
     set_camera_projection();
     camera *aux = (camera*)malloc(sizeof(camera));
 
+    _object_camera = (camera*)malloc(sizeof(camera));
+    _object_camera->type = PERSPECTIVA;
+    _object_camera->proj = global_perspective;
+
     vector3 cam_pos;
     cam_pos.x = 5.0f;
     cam_pos.y = 5.0f;
@@ -202,34 +206,57 @@ void matriz_inversa(camera *c){
  */
 void add_camera_mode_obj(object3d *obj)
 {
-    camera * objcam = (camera*)malloc(sizeof(camera));
 
-    objcam->proj = global_perspective;
-    objcam->type = PERSPECTIVA;
+    _object_camera->minv[0] = obj->matrix_table->matriz[0];
+    _object_camera->minv[1] = obj->matrix_table->matriz[4];
+    _object_camera->minv[2] = -obj->matrix_table->matriz[8];
+    _object_camera->minv[3] = 0;
 
-    objcam->minv[0] = obj->matrix_table->matriz[0];
-    objcam->minv[1] = obj->matrix_table->matriz[4];
-    objcam->minv[2] = -obj->matrix_table->matriz[8];
-    objcam->minv[3] = 0;
+    _object_camera->minv[4] = obj->matrix_table->matriz[1];
+    _object_camera->minv[5] = obj->matrix_table->matriz[5];
+    _object_camera->minv[6] = -obj->matrix_table->matriz[9];
+    _object_camera->minv[7] = 0;
 
-    objcam->minv[4] = obj->matrix_table->matriz[1];
-    objcam->minv[5] = obj->matrix_table->matriz[5];
-    objcam->minv[6] = -obj->matrix_table->matriz[9];
-    objcam->minv[7] = 0;
+    _object_camera->minv[8] = obj->matrix_table->matriz[2];
+    _object_camera->minv[9] = obj->matrix_table->matriz[6];
+    _object_camera->minv[10] = -obj->matrix_table->matriz[10];
+    _object_camera->minv[11] = 0;
 
-    objcam->minv[8] = obj->matrix_table->matriz[2];
-    objcam->minv[9] = obj->matrix_table->matriz[6];
-    objcam->minv[10] = -obj->matrix_table->matriz[10];
-    objcam->minv[11] = 0;
+    _object_camera->minv[12] = obj->matrix_table->matriz[12];
+    _object_camera->minv[13] = obj->matrix_table->matriz[13];
+    _object_camera->minv[14] = obj->matrix_table->matriz[14];
+    _object_camera->minv[15] = 1;
 
-    objcam->minv[12] = obj->matrix_table->matriz[12];
-    objcam->minv[13] = obj->matrix_table->matriz[13];
-    objcam->minv[14] = obj->matrix_table->matriz[14];
-    objcam->minv[15] = 1;
+    matriz_inversa(_object_camera);
+}
 
-    _object_camera = objcam;
+/**
+ * Obtenemos una matriz de objeto ordenada como tal
+ * @param m matriz de ojeto de la cámara
+ * @param mobj matriz a devolver
+ */
+void set_objectlike_matrix(GLfloat *m, GLfloat *mobj){
 
-    matriz_inversa(objcam);
+    mobj[0] = m[0];
+    mobj[4] = m[1];
+    mobj[8] = -m[2];
+
+    mobj[1] = m[4];
+    mobj[5] = m[5];
+    mobj[9] = -m[6];
+
+    mobj[2] = m[8];
+    mobj[6] = m[9];
+    mobj[10] = -m[10];
+
+    mobj[12] = m[12];
+    mobj[13] = m[13];
+    mobj[14] = m[14];
+    mobj[15] = 1;
+    mobj[3] = 0;
+    mobj[7] = 0;
+    mobj[11] = 0;
+
 }
 
 
