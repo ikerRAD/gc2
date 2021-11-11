@@ -91,12 +91,14 @@ void display(void) {
                   _selected_camera->proj->near,
                   _selected_camera->proj->far);
     } else {
-        glOrtho(_selected_camera->proj->left * _window_ratio,
-                _selected_camera->proj->right * _window_ratio,
+
+        glOrtho(_selected_camera->proj->left ,//* _window_ratio,
+                _selected_camera->proj->right ,//* _window_ratio,
                 _selected_camera->proj->bottom,
                 _selected_camera->proj->top,
                 _selected_camera->proj->near,
                 _selected_camera->proj->far);
+
     }
 
     /* Now we start drawing the object */
@@ -105,7 +107,7 @@ void display(void) {
     if(elemento != OBJETOCAMARA) {
         glLoadMatrixf(_selected_camera->m);
     }else{
-        glLoadMatrixf(_object_camera);
+        glLoadMatrixf(_object_camera->m);
     }
 
     /*First, we draw the axes*/
@@ -149,7 +151,7 @@ void display(void) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
         if(elemento == OBJETOCAMARA || aux_cam != _selected_camera) {
             /* Select the color*/
-            glColor3f(KG_COL_NONSELECTED_R, KG_COL_NONSELECTED_G, KG_COL_NONSELECTED_B);
+            glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
 
 
             /* Draw the object; for each face create a new polygon with the corresponding vertices */

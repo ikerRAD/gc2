@@ -22,7 +22,6 @@ camera * _first_camera = 0;                 /*List of cameras*/
 camera * _selected_camera = 0;              /*Camera currently selected*/
 camera * _object_camera = 0;                /*Special object camera*/
 
-projection *global_perspective, *global_ortho;
 
 int modo = TRASLACION;
 int sis_referencia = LOCALES;

@@ -8,7 +8,7 @@
 #include <math.h>
 #include "load_obj.h"
 
-extern projection *global_perspective, *global_ortho;
+
 
 extern camera *_first_camera;
 extern camera *_selected_camera;
@@ -16,27 +16,7 @@ extern camera *_object_camera;
 
 extern object3d *_selected_object;
 
-/**
- * Método para inicializar los valores por defecto de proyección.
- */
-void set_camera_projection(){
-    global_perspective = (projection*)malloc(sizeof(projection));
-    global_ortho = (projection*)malloc(sizeof(projection));
 
-    global_perspective->left = -0.1;
-    global_perspective->right = 0.1;
-    global_perspective->top = 0.1;
-    global_perspective->bottom = -0.1;
-    global_perspective->near = 0.1;
-    global_perspective->far = 100.0;
-
-    global_ortho->left = -3.0;
-    global_ortho->right = 3.0;
-    global_ortho->top = 3.0;
-    global_ortho->bottom = -3.0;
-    global_ortho->near = 0.0;
-    global_ortho->far = 100.0;
-}
 
 /**
  * Método para crear una cámara
@@ -49,7 +29,13 @@ void create_camera(vector3 camera_pos, vector3 camera_front, vector3 camera_up, 
 
     cam->next = 0;
     cam->type = PERSPECTIVA;
-    cam->proj = global_perspective;
+    cam->proj = (projection*)malloc(sizeof (projection));
+    cam->proj->left = -0.1;
+    cam->proj->right = 0.1;
+    cam->proj->top = 0.1;
+    cam->proj->bottom = -0.1;
+    cam->proj->near = 0.1;
+    cam->proj->far = 1000.0;
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
@@ -96,12 +82,18 @@ void add_camera_list(camera *l_camera){
  */
 void default_cameras(){
 
-    set_camera_projection();
+
     camera *aux = (camera*)malloc(sizeof(camera));
 
     _object_camera = (camera*)malloc(sizeof(camera));
     _object_camera->type = PERSPECTIVA;
-    _object_camera->proj = global_perspective;
+    _object_camera->proj = (projection*)malloc(sizeof (projection));
+    _object_camera->proj->left = -0.1;
+    _object_camera->proj->right = 0.1;
+    _object_camera->proj->top = 0.1;
+    _object_camera->proj->bottom = -0.1;
+    _object_camera->proj->near = 0.1;
+    _object_camera->proj->far = 1000.0;
 
     vector3 cam_pos;
     cam_pos.x = 5.0f;
@@ -145,22 +137,22 @@ void cambiar_camara(){
 void add_camera(){
     camera *aux = (camera*)malloc(sizeof(camera));
 
-    vector3 pos;
+    vector3 cam_pos;
     cam_pos.x = 5.0f;
     cam_pos.y = 5.0f;
     cam_pos.z = -3.0f;
 
-    vector3 front;
+    vector3 cam_front;
     cam_front.x = 0.0f;
     cam_front.y = 0.0f;
     cam_front.z = 0.0f;
 
-    vector3 up;
+    vector3 cam_up;
     cam_up.x = 0.0f;
     cam_up.y = 1.0f;
     cam_up.z = 0.0f;
 
-    create_camera(pos, front, up, aux);
+    create_camera(cam_pos, cam_front, cam_up, aux);
     load_camera_representation(aux);
 
     add_camera_list(aux);
@@ -265,18 +257,41 @@ void set_objectlike_matrix(GLfloat *m, GLfloat *mobj){
  * @param obj objeto a centrar
  */
 void centre_camera_to_obj(object3d *obj){
-    camera *aux = (camera*)malloc(sizeof(camera));
 
-    create_camera(
-            (vector3) { .x = _selected_camera->minv[12], .y = _selected_camera->minv[13], .z = _selected_camera->minv[14] },
-            (vector3) { .x = obj->matrix_table->matriz[12], .y = obj->matrix_table->matriz[13], .z = obj->matrix_table->matriz[14] },
-            (vector3) { .x = 0, .y = 1, .z = 0 },
-            aux
-    );
+    vector3 camera_pos = (vector3) { .x = _selected_camera->minv[12], .y = _selected_camera->minv[13], .z = _selected_camera->minv[14] };
+    vector3 camera_front = (vector3) { .x = obj->matrix_table->matriz[12], .y = obj->matrix_table->matriz[13], .z = obj->matrix_table->matriz[14] };
+    vector3 camera_up = (vector3) { .x = 0, .y = 1, .z = 0 };
 
-    aux->next = _selected_camera->next;
-    aux->proj = _selected_camera->proj;
-    _selected_camera = aux;
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(camera_pos.x, camera_pos.y, camera_pos.z,
+              camera_front.x, camera_front.y, camera_front.z,
+              camera_up.x, camera_up.y, camera_up.z);
+
+    glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->m);
+
+    _selected_camera->minv[0] = _selected_camera->m[0];
+    _selected_camera->minv[1] = _selected_camera->m[4];
+    _selected_camera->minv[2] = _selected_camera->m[8];
+    _selected_camera->minv[3] = 0;
+
+    _selected_camera->minv[4] = _selected_camera->m[1];
+    _selected_camera->minv[5] = _selected_camera->m[5];
+    _selected_camera->minv[6] = _selected_camera->m[9];
+    _selected_camera->minv[7] = 0;
+
+    _selected_camera->minv[8] = _selected_camera->m[2];
+    _selected_camera->minv[9] = _selected_camera->m[6];
+    _selected_camera->minv[10] = _selected_camera->m[10];
+    _selected_camera->minv[11] = 0;
+
+    _selected_camera->minv[12] = camera_pos.x;
+    _selected_camera->minv[13] = camera_pos.y;
+    _selected_camera->minv[14] = camera_pos.z;
+    _selected_camera->minv[15] = 1;
+
+
 }
 /**
  * Método para moverse en modo análisis, realiza los cálculos necesarios para rotar positiva o negativamente sobre la x o y
