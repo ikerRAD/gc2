@@ -633,7 +633,6 @@ void keyboard(unsigned char key, int x, int y) {
     case 'K'://K mayus, visualizar lo que ve el objeto seleccionado si hay objeto
 
         if(_selected_object != 0) {
-            printf("elemento era: %d\n", elemento);
             if(elemento != OBJETOCAMARA) {
 
                 printf("Modo especial, visualizamos lo que el objeto seleccionado. Pulsa K, O, I o C para salir.\n");
@@ -645,7 +644,6 @@ void keyboard(unsigned char key, int x, int y) {
                 //pasamos a modo objeto
                 elemento = OBJETO;
             }
-            printf("pasamos estamos en modo %d\n", elemento);
         }
 
         break;

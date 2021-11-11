@@ -59,14 +59,30 @@ void reshape(int width, int height) {
 }
 
 
+GLfloat producto_escalar(vector3 uno, vector3 dos){
+    return (uno.x * dos.x) + (uno.y * dos.y) + (uno.z * dos.z);
+}
+
+vector3 get_face_camera_vector(camera *cam, point3 pt){
+    GLfloat x, y, z;
+
+    x = cam->minv[12];
+    y = cam->minv[13];
+    z = cam->minv[14];
+
+    //desde camara hasta punto
+    return (vector3){.x = pt.x-x , .y = pt.y-y , .z = pt.z-z};
+}
+
 /**
  * @brief Callback display function
  */
 void display(void) {
-    GLint v_index, v, f;
+    GLint v_index, v, f, v_aux;
     object3d *aux_obj = _first_object;
     camera  *aux_cam = _first_camera;
     GLfloat mcam[16];
+    vector3  cpt;
 
     /* Clear the screen */
     glClear(GL_COLOR_BUFFER_BIT);
@@ -131,14 +147,29 @@ void display(void) {
             glMultMatrixf(aux_obj->matrix_table->matriz);
             for (f = 0; f < aux_obj->num_faces; f++) {
                 glBegin(GL_POLYGON);
-                for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
-                    v_index = aux_obj->face_table[f].vertex_table[v];
-                    glVertex3d(aux_obj->vertex_table[v_index].coord.x,
-                               aux_obj->vertex_table[v_index].coord.y,
-                               aux_obj->vertex_table[v_index].coord.z);
 
-                }
+                /*v_aux = aux_obj->face_table[f].vertex_table[0];
+                if (elemento != OBJETOCAMARA) {
+                    cpt = get_face_camera_vector(_selected_camera, aux_obj->vertex_table[v_aux].coord);
+                } else {
+                    cpt = get_face_camera_vector(_object_camera, aux_obj->vertex_table[v_aux].coord);
+                }*/
+
+                /*glNormal3d(aux_obj->face_table[f].normal.x,
+                           aux_obj->face_table[f].normal.y,
+                           aux_obj->face_table[f].normal.z);*/
+
+                //if(producto_escalar(cpt, aux_obj->face_table[f].normal) > 0){
+                    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
+                        v_index = aux_obj->face_table[f].vertex_table[v];
+                        glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+                                   aux_obj->vertex_table[v_index].coord.y,
+                                   aux_obj->vertex_table[v_index].coord.z);
+
+                    }
+                //}
                 glEnd();
+
             }
             glPopMatrix();
         }
@@ -163,13 +194,26 @@ void display(void) {
             glMultMatrixf(mcam);
             for (f = 0; f < aux_cam->num_faces; f++) {
                 glBegin(GL_POLYGON);
-                for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
-                    v_index = aux_cam->face_table[f].vertex_table[v];
-                    glVertex3d(aux_cam->vertex_table[v_index].coord.x,
-                               aux_cam->vertex_table[v_index].coord.y,
-                               aux_cam->vertex_table[v_index].coord.z);
 
-                }
+                /*v_aux = aux_cam->face_table[f].vertex_table[0];
+                if (elemento != OBJETOCAMARA) {
+                    cpt = get_face_camera_vector(_selected_camera, aux_cam->vertex_table[v_aux].coord);
+                } else {
+                    cpt = get_face_camera_vector(_object_camera, aux_cam->vertex_table[v_aux].coord);
+                }*/
+
+                /*glNormal3d(aux_cam->face_table[f].normal.x,
+                           aux_cam->face_table[f].normal.y,
+                           aux_cam->face_table[f].normal.z);*/
+                //if(producto_escalar(cpt, aux_cam->face_table[f].normal) > 0) {
+                    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
+                        v_index = aux_cam->face_table[f].vertex_table[v];
+                        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
+                                   aux_cam->vertex_table[v_index].coord.y,
+                                   aux_cam->vertex_table[v_index].coord.z);
+
+                    }
+                //}
                 glEnd();
             }
             glPopMatrix();

@@ -3,6 +3,7 @@
 #include <string.h>
 #include <malloc.h>
 #include "definitions.h"
+#include <math.h>
 
 #define MAXLINE 200
 #define CAMERAPATH "camara.obj"
@@ -33,6 +34,60 @@ static int sreadint2(char * lerroa, int * zenbakiak) {
 printf("%d numbers in the line\n",kont);
     return (kont);
 }
+
+
+vector3 calculate_surface_normal(int index1, int index2, int index3, vertex *vertex_table){
+    vector3 normal_vector;
+
+    vector3 u;
+    u.x = vertex_table[index2].coord.x - vertex_table[index1].coord.x;
+    u.y = vertex_table[index2].coord.y - vertex_table[index1].coord.y;
+    u.z = vertex_table[index2].coord.z - vertex_table[index1].coord.z;
+
+    vector3 v;
+    v.x = vertex_table[index3].coord.x - vertex_table[index1].coord.x;
+    v.y = vertex_table[index3].coord.y - vertex_table[index1].coord.y;
+    v.z = vertex_table[index3].coord.z - vertex_table[index1].coord.z;
+
+    normal_vector.x = (u.y * v.z) - (u.z - v.y);
+    normal_vector.y = (u.z * v.x) - (u.x - v.z);
+    normal_vector.z = (u.x * v.y) - (u.y * v.x);
+
+    return normal_vector;
+}
+
+
+void normal_vectors(object3d *obj){
+    GLint f;
+    GLint index1, index2, index3;
+    GLfloat norma;
+    vector3 vector_normal;
+
+
+    for (f = 0; f < obj->num_faces; f++){
+        index1 = obj->face_table[f].vertex_table[0];
+        index2 = obj->face_table[f].vertex_table[1];
+        index3 = obj->face_table[f].vertex_table[2];
+
+        vector_normal = calculate_surface_normal(index1, index2, index3, obj->vertex_table);
+
+        obj->face_table[f].normal = vector_normal;
+
+        norma = sqrt(pow(obj->face_table[f].normal.x, 2) +
+                     pow(obj->face_table[f].normal.y, 2) +
+                     pow(obj->face_table[f].normal.z, 2));
+        //canonizamos los vectores
+        obj->face_table[f].normal.x /= norma;
+        obj->face_table[f].normal.y /= norma;
+        obj->face_table[f].normal.z /= norma;
+
+    }
+
+}
+
+
+
+
 /**
  * @brief Function to read wavefront files (*.obj)
  * @param file_name Path of the file to be read
@@ -187,7 +242,7 @@ printf("2 pasada\n");
             object_ptr->max.z = object_ptr->vertex_table[i].coord.z;
 
     }
-
+    normal_vectors(object_ptr);
     return (0);
 }
 
