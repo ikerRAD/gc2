@@ -8,9 +8,9 @@
 /** EXTERNAL VARIABLES **/
 
 extern GLdouble _window_ratio;
-extern GLdouble _ortho_x_min,_ortho_x_max;
+/*extern GLdouble _ortho_x_min,_ortho_x_max;
 extern GLdouble _ortho_y_min,_ortho_y_max;
-extern GLdouble _ortho_z_min,_ortho_z_max;
+extern GLdouble _ortho_z_min,_ortho_z_max;*/
 
 extern object3d *_first_object;
 extern object3d *_selected_object;
@@ -59,20 +59,36 @@ void reshape(int width, int height) {
 }
 
 
-GLfloat producto_escalar(vector3 uno, vector3 dos){
-    return (uno.x * dos.x) + (uno.y * dos.y) + (uno.z * dos.z);
+GLfloat producto_escalar(vector3 uno, vector3 normal){
+
+    return (uno.x * normal.x) + (uno.y * normal.y) + (uno.z * normal.z);
 }
 
-vector3 get_face_camera_vector(camera *cam, point3 pt){
-    GLfloat x, y, z;
+vector3 get_face_camera_vector(camera *cam, point3 pt, GLfloat *mcsr){
+    GLfloat x, y, z, xmcsr, ymcsr, zmcsr, ex, ey, ez;
 
     x = cam->minv[12];
     y = cam->minv[13];
     z = cam->minv[14];
 
+    ex = mcsr[0]*mcsr[12] + mcsr[1]*mcsr[13] + mcsr[2]*mcsr[15];
+    ey = mcsr[4]*mcsr[12] + mcsr[5]*mcsr[13] + mcsr[6]*mcsr[15];
+    ez = mcsr[8]*mcsr[12] + mcsr[9]*mcsr[13] + mcsr[10]*mcsr[15];
+
+    xmcsr = mcsr[0] * x + mcsr[1] * y + mcsr[2]  * z - ex;
+    ymcsr = mcsr[4] * x + mcsr[5] * y + mcsr[6]  * z - ey;
+    zmcsr = mcsr[8] * x + mcsr[9] * y + mcsr[10] * z - ez;
+
     //desde camara hasta punto
-    return (vector3){.x = pt.x-x , .y = pt.y-y , .z = pt.z-z};
+    return (vector3){.x = xmcsr-pt.x , .y = ymcsr-pt.y , .z = zmcsr-pt.z};
 }
+
+void copypaste(GLfloat *m1, GLfloat *m2){
+    for(int i=0; i<16; i++){
+        m2[i] = m1[i];
+    }
+}
+
 
 /**
  * @brief Callback display function
@@ -147,12 +163,11 @@ void display(void) {
             glMultMatrixf(aux_obj->matrix_table->matriz);
             for (f = 0; f < aux_obj->num_faces; f++) {
                 glBegin(GL_POLYGON);
-
                 /*v_aux = aux_obj->face_table[f].vertex_table[0];
                 if (elemento != OBJETOCAMARA) {
-                    cpt = get_face_camera_vector(_selected_camera, aux_obj->vertex_table[v_aux].coord);
+                    cpt = get_face_camera_vector(_selected_camera, aux_obj->vertex_table[v_aux].coord, aux_obj->matrix_table->matriz);
                 } else {
-                    cpt = get_face_camera_vector(_object_camera, aux_obj->vertex_table[v_aux].coord);
+                    cpt = get_face_camera_vector(_object_camera, aux_obj->vertex_table[v_aux].coord, aux_obj->matrix_table->matriz);
                 }*/
 
                 /*glNormal3d(aux_obj->face_table[f].normal.x,
@@ -160,17 +175,35 @@ void display(void) {
                            aux_obj->face_table[f].normal.z);*/
 
                 //if(producto_escalar(cpt, aux_obj->face_table[f].normal) > 0){
-                    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
-                        v_index = aux_obj->face_table[f].vertex_table[v];
-                        glVertex3d(aux_obj->vertex_table[v_index].coord.x,
-                                   aux_obj->vertex_table[v_index].coord.y,
-                                   aux_obj->vertex_table[v_index].coord.z);
 
-                    }
+                for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
+                    v_index = aux_obj->face_table[f].vertex_table[v];
+                    glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+                               aux_obj->vertex_table[v_index].coord.y,
+                               aux_obj->vertex_table[v_index].coord.z);
+
+                }
+
                 //}
                 glEnd();
 
             }
+            /*glColor3f(0, 0, 1);
+            for (f = 0; f < aux_obj->num_faces; f++) {
+                glBegin(GL_LINES);
+
+                v_index = aux_obj->face_table[f].vertex_table[0];
+                glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+                           aux_obj->vertex_table[v_index].coord.y,
+                           aux_obj->vertex_table[v_index].coord.z);
+
+                glVertex3d(aux_obj->vertex_table[v_index].coord.x + aux_obj->face_table[f].normal.x ,
+                           aux_obj->vertex_table[v_index].coord.y + aux_obj->face_table[f].normal.y ,
+                           aux_obj->vertex_table[v_index].coord.z  + aux_obj->face_table[f].normal.x );
+
+                glEnd();
+            }*/
+
             glPopMatrix();
         }
         aux_obj = aux_obj->next;
@@ -197,22 +230,22 @@ void display(void) {
 
                 /*v_aux = aux_cam->face_table[f].vertex_table[0];
                 if (elemento != OBJETOCAMARA) {
-                    cpt = get_face_camera_vector(_selected_camera, aux_cam->vertex_table[v_aux].coord);
+                    cpt = get_face_camera_vector(_selected_camera, aux_cam->vertex_table[v_aux].coord, mcam);
                 } else {
-                    cpt = get_face_camera_vector(_object_camera, aux_cam->vertex_table[v_aux].coord);
+                    cpt = get_face_camera_vector(_object_camera, aux_cam->vertex_table[v_aux].coord, mcam);
                 }*/
 
                 /*glNormal3d(aux_cam->face_table[f].normal.x,
                            aux_cam->face_table[f].normal.y,
                            aux_cam->face_table[f].normal.z);*/
                 //if(producto_escalar(cpt, aux_cam->face_table[f].normal) > 0) {
-                    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
-                        v_index = aux_cam->face_table[f].vertex_table[v];
-                        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
-                                   aux_cam->vertex_table[v_index].coord.y,
-                                   aux_cam->vertex_table[v_index].coord.z);
+                for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
+                    v_index = aux_cam->face_table[f].vertex_table[v];
+                    glVertex3d(aux_cam->vertex_table[v_index].coord.x,
+                               aux_cam->vertex_table[v_index].coord.y,
+                               aux_cam->vertex_table[v_index].coord.z);
 
-                    }
+                }
                 //}
                 glEnd();
             }

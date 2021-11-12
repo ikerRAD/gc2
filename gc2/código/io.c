@@ -664,27 +664,29 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 'p':// cambiar perspectiva (propia de cada cámara)
     case 'P':
-        //de esta manera si era 0 será 1 y viceversa
-        _selected_camera->type = (_selected_camera->type + 1)%2;
+        //en este modo no tiene sentido
+        if(elemento != OBJETOCAMARA) {
+            //de esta manera si era 0 será 1 y viceversa
+            _selected_camera->type = (_selected_camera->type + 1) % 2;
 
-        if(_selected_camera->type == PARALELA){
-            printf("Proyección es paralela.\n");
-            _selected_camera->proj->left = -5.0;
-            _selected_camera->proj->right = 5.0;
-            _selected_camera->proj->top = 5.0;
-            _selected_camera->proj->bottom = -5.0;
-            _selected_camera->proj->near = 0;
-            _selected_camera->proj->far = 1000.0;
-        }else{
-            printf("Proyección es perspectiva.\n");
-            _selected_camera->proj->left = -0.1;
-            _selected_camera->proj->right = 0.1;
-            _selected_camera->proj->top = 0.1;
-            _selected_camera->proj->bottom = -0.1;
-            _selected_camera->proj->near = 0.1;
-            _selected_camera->proj->far = 1000.0;
+            if (_selected_camera->type == PARALELA) {
+                printf("Proyección es paralela.\n");
+                _selected_camera->proj->left = -5.0;
+                _selected_camera->proj->right = 5.0;
+                _selected_camera->proj->top = 5.0;
+                _selected_camera->proj->bottom = -5.0;
+                _selected_camera->proj->near = 0;
+                _selected_camera->proj->far = 1000.0;
+            } else {
+                printf("Proyección es perspectiva.\n");
+                _selected_camera->proj->left = -0.1;
+                _selected_camera->proj->right = 0.1;
+                _selected_camera->proj->top = 0.1;
+                _selected_camera->proj->bottom = -0.1;
+                _selected_camera->proj->near = 0.1;
+                _selected_camera->proj->far = 1000.0;
+            }
         }
-
         break;
 
     default:
