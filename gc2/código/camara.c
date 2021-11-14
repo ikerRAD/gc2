@@ -299,8 +299,8 @@ void centre_camera_to_obj(object3d *obj){
  * @param y sentido y módulo de la rotación centrada al objeto sobre el eje y
  */
 void modo_analisis(int x, int y){
+
     GLfloat px, py, pz, distance;
-    GLfloat m_minus[16], m_plus[16], m_rot[16];
 
     px = _selected_object->matrix_table->matriz[12] - _selected_camera->minv[12];
     py = _selected_object->matrix_table->matriz[13] - _selected_camera->minv[13];
@@ -308,44 +308,14 @@ void modo_analisis(int x, int y){
 
     distance = sqrt(pow(px, 2) + pow(py, 2) + pow(pz, 2));
 
-    identity(m_minus);
-    identity(m_plus);
-    identity(m_rot);
-
-    m_minus[12] = 0;
-    m_minus[13] = 0;
-    m_minus[14] = -distance;
-
-    m_plus[12] = 0;
-    m_plus[13] = 0;
-    m_plus[14] = distance;
-
-    if (x != 0){
-        m_rot[5] = cos(x * KG_STEP_ROTATE * M_PI / 180.0);
-        m_rot[6] = sin(x * KG_STEP_ROTATE * M_PI / 180.0);
-        m_rot[9] = -1*(sin(x * KG_STEP_ROTATE * M_PI / 180.0));
-        m_rot[10] = cos(x * KG_STEP_ROTATE * M_PI / 180.0);
-    } else {
-        m_rot[0] = cos(y * KG_STEP_ROTATE * M_PI / 180.0);
-        m_rot[2] = -1 * (sin(y * KG_STEP_ROTATE * M_PI / 180.0));
-        m_rot[8] = sin(y * KG_STEP_ROTATE * M_PI / 180.0);
-        m_rot[10] = cos(y * KG_STEP_ROTATE * M_PI / 180.0);
-    }
-
     glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    glMultMatrixf(m_minus);
-    glMultMatrixf(m_rot);
-    glMultMatrixf(m_plus);
-
-    glGetFloatv(GL_MODELVIEW_MATRIX, m_rot);
-
-    glLoadIdentity();
-    glMultMatrixf(_selected_camera->minv);
-    glMultMatrixf(m_rot);
+    glLoadMatrixf(_selected_camera->minv);
+    glTranslatef(0, 0, -distance);
+    glRotatef(8.0f,-x,-y,0);
+    glTranslatef(0, 0,  distance);
     glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
 
     matriz_inversa(_selected_camera);
+
 
 }

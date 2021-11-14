@@ -346,8 +346,6 @@ void esp_keyboard(int key, int x, int y){
         /*Si el objeto es la cámara*/
         if(elemento == OBJETOCAMARA){
             add_camera_mode_obj(_selected_object);
-        }else if(elemento == OBJETO && modo_camara == ANALISIS){
-            centre_camera_to_obj(_selected_object);
         }
 
     }
@@ -405,7 +403,7 @@ void keyboard(unsigned char key, int x, int y) {
                     _selected_object = _first_object;
 
                     //En caso de que la estemos visualizando lo que ve el objeto seleccionado o que estemos en modo análisis
-                    if(modo_camara == ANALISIS){
+                    if(elemento == CAMARA && modo_camara == ANALISIS){
                         centre_camera_to_obj(_selected_object);
                     }else if (elemento == OBJETOCAMARA){
                         add_camera_mode_obj(_selected_object);
@@ -422,7 +420,7 @@ void keyboard(unsigned char key, int x, int y) {
                 /*The selection is circular, thus if we move out of the list we go back to the first element*/
                 if (_selected_object == 0) _selected_object = _first_object;
 
-                if(modo_camara == ANALISIS){
+                if(elemento == CAMARA && modo_camara == ANALISIS){
                     centre_camera_to_obj(_selected_object);
                 }else if (elemento == OBJETOCAMARA){
                     add_camera_mode_obj(_selected_object);
@@ -460,7 +458,7 @@ void keyboard(unsigned char key, int x, int y) {
                 if(_selected_object == 0){
 
                     /*Necesitamos asegurarnos de que estos modos solo se ejecutan si hay objetos*/
-                    if(modo_camara == ANALISIS){
+                    if(elemento == CAMARA && modo_camara == ANALISIS){
                         modo_camara = VUELO;
                     }else if (elemento == OBJETOCAMARA){
                         elemento = OBJETO;

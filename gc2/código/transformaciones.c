@@ -178,7 +178,7 @@ void aplicar_transformaciones(vector3 *value){
             break;
 
         case ESCALADO:
-            if (elemento == OBJETO){
+            if (elemento == OBJETO || elemento == OBJETOCAMARA){
                 glScalef(value->x, value->y, value->z);
             }
             break;
