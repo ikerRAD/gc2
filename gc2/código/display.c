@@ -4,13 +4,9 @@
 #include <GL/glu.h>
 #include <math.h>
 #include "camara.h"
+#include <stdio.h>
 
 /** EXTERNAL VARIABLES **/
-
-extern GLdouble _window_ratio;
-/*extern GLdouble _ortho_x_min,_ortho_x_max;
-extern GLdouble _ortho_y_min,_ortho_y_max;
-extern GLdouble _ortho_z_min,_ortho_z_max;*/
 
 extern object3d *_first_object;
 extern object3d *_selected_object;
@@ -20,6 +16,10 @@ extern camera * _selected_camera;
 extern camera * _object_camera;
 
 extern int elemento;
+extern int shade;
+
+void matriz_csr(GLfloat *mcsr, GLfloat *m);
+
 /**
  * @brief Function to draw the axes
  */
@@ -53,42 +53,56 @@ void draw_axes()
  */
 void reshape(int width, int height) {
     glViewport(0, 0, width, height);
-    /*  Take care, the width and height are integer numbers, but the ratio is a GLdouble so, in order to avoid
-     *  rounding the ratio to integer values we need to cast width and height before computing the ratio */
-    _window_ratio = (GLdouble) width / (GLdouble) height;
+
 }
 
 
-GLfloat producto_escalar(vector3 uno, vector3 normal){
+GLfloat producto_escalar(point3 uno, vector3 normal, GLfloat *mo, GLfloat *mc){
 
-    return (uno.x * normal.x) + (uno.y * normal.y) + (uno.z * normal.z);
+    vector3 n, co, cero;
+    GLfloat m[16];
+    matriz_csr(m, mo);
+
+    n.x = mc[12] * m[0] + mc[13] * m[4] + mc[14] * m[8] + m[12];
+    n.y = mc[12] * m[1] + mc[13] * m[5] + mc[14] * m[9] + m[13];
+    n.z = mc[12] * m[2] + mc[13] * m[6] + mc[14] * m[10] + m[14];
+
+    co.x = n.x - uno.x;
+    co.y = n.y - uno.y;
+    co.z = n.z - uno.z;
+
+
+
+    return (co.x * normal.x) + (co.y * normal.y) + (co.z * normal.z);
 }
 
-vector3 get_face_camera_vector(camera *cam, point3 pt, GLfloat *mcsr){
-    GLfloat x, y, z, xmcsr, ymcsr, zmcsr, ex, ey, ez;
+void matriz_csr(GLfloat *mcsr, GLfloat *m){
+    mcsr[0] = m[0];
+    mcsr[4] = m[1];
+    mcsr[8] = m[2];
+    mcsr[12] = -(m[12] * m[0] +
+            m[13] * m[1] +
+            m[14] * m[2]);
 
-    x = cam->minv[12];
-    y = cam->minv[13];
-    z = cam->minv[14];
+    mcsr[1] = m[4];
+    mcsr[5] = m[5];
+    mcsr[9] = m[6];
+    mcsr[13] = -(m[12] * m[4] +
+            m[13] * m[5] +
+            m[14] * m[6]);
 
-    ex = mcsr[0]*mcsr[12] + mcsr[1]*mcsr[13] + mcsr[2]*mcsr[15];
-    ey = mcsr[4]*mcsr[12] + mcsr[5]*mcsr[13] + mcsr[6]*mcsr[15];
-    ez = mcsr[8]*mcsr[12] + mcsr[9]*mcsr[13] + mcsr[10]*mcsr[15];
+    mcsr[2] = m[8];
+    mcsr[6] = m[9];
+    mcsr[10] = m[10];
+    mcsr[14] = -(m[12] * m[8] +
+            m[13] * m[9] +
+            m[14] * m[10]);
 
-    xmcsr = mcsr[0] * x + mcsr[1] * y + mcsr[2]  * z - ex;
-    ymcsr = mcsr[4] * x + mcsr[5] * y + mcsr[6]  * z - ey;
-    zmcsr = mcsr[8] * x + mcsr[9] * y + mcsr[10] * z - ez;
-
-    //desde camara hasta punto
-    return (vector3){.x = xmcsr-pt.x , .y = ymcsr-pt.y , .z = zmcsr-pt.z};
+    mcsr[3] = 0;
+    mcsr[7] = 0;
+    mcsr[11] = 0;
+    mcsr[15] = 1;
 }
-
-void copypaste(GLfloat *m1, GLfloat *m2){
-    for(int i=0; i<16; i++){
-        m2[i] = m1[i];
-    }
-}
-
 
 /**
  * @brief Callback display function
@@ -99,9 +113,16 @@ void display(void) {
     camera  *aux_cam = _first_camera;
     GLfloat mcam[16];
     vector3  cpt;
+    camera *cam2;
+
+    if(elemento == OBJETOCAMARA){
+        cam2 = _object_camera;
+    }else{
+        cam2 = _selected_camera;
+    }
 
     /* Clear the screen */
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT);//GL_DEPTH_TEST | GL_COLOR_BUFFER_BIT);
 
     /* Define the projection */
     glMatrixMode(GL_PROJECTION);
@@ -162,33 +183,39 @@ void display(void) {
 
             glMultMatrixf(aux_obj->matrix_table->matriz);
             for (f = 0; f < aux_obj->num_faces; f++) {
-                glBegin(GL_POLYGON);
-                /*v_aux = aux_obj->face_table[f].vertex_table[0];
-                if (elemento != OBJETOCAMARA) {
-                    cpt = get_face_camera_vector(_selected_camera, aux_obj->vertex_table[v_aux].coord, aux_obj->matrix_table->matriz);
-                } else {
-                    cpt = get_face_camera_vector(_object_camera, aux_obj->vertex_table[v_aux].coord, aux_obj->matrix_table->matriz);
-                }*/
 
-                /*glNormal3d(aux_obj->face_table[f].normal.x,
-                           aux_obj->face_table[f].normal.y,
-                           aux_obj->face_table[f].normal.z);*/
+                v_aux = aux_obj->face_table[f].vertex_table[0];
 
-                //if(producto_escalar(cpt, aux_obj->face_table[f].normal) > 0){
+                if(producto_escalar(aux_obj->vertex_table[v_aux].coord, aux_obj->face_table[f].normal, aux_obj->matrix_table->matriz, cam2->minv) > 0.0){
 
-                for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
-                    v_index = aux_obj->face_table[f].vertex_table[v];
-                    glVertex3d(aux_obj->vertex_table[v_index].coord.x,
-                               aux_obj->vertex_table[v_index].coord.y,
-                               aux_obj->vertex_table[v_index].coord.z);
+                    glBegin(GL_POLYGON);
 
+                    if(shade == FLAT) {
+                        glNormal3d(aux_obj->face_table[f].normal.x,
+                                   aux_obj->face_table[f].normal.y,
+                                   aux_obj->face_table[f].normal.z);
+                    }
+
+                    for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
+                        v_index = aux_obj->face_table[f].vertex_table[v];
+
+                        if(shade == SMOOTH) {
+                            glNormal3d(aux_obj->vertex_table[v_index].normal.x,
+                                       aux_obj->vertex_table[v_index].normal.y,
+                                       aux_obj->vertex_table[v_index].normal.z);
+                        }
+
+                        glVertex3d(aux_obj->vertex_table[v_index].coord.x,
+                                   aux_obj->vertex_table[v_index].coord.y,
+                                   aux_obj->vertex_table[v_index].coord.z);
+
+                    }
+                    glEnd();
                 }
 
-                //}
-                glEnd();
-
             }
-            /*glColor3f(0, 0, 1);
+
+            /*glColor3f(0, 1, 1);
             for (f = 0; f < aux_obj->num_faces; f++) {
                 glBegin(GL_LINES);
 
@@ -211,43 +238,49 @@ void display(void) {
 
 
     /*Now each of the cameras in the list*/
+
+    /* Select the color*/
+    glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
+
     while (aux_cam != 0) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
         if(elemento == OBJETOCAMARA || aux_cam != _selected_camera) {
-            /* Select the color*/
-            glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
-
 
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
             //glLoadIdentity();
             glPushMatrix();
 
-            set_objectlike_matrix(aux_cam->minv, mcam);
-
-            glMultMatrixf(mcam);
+            glMultMatrixf(aux_cam->minv);
             for (f = 0; f < aux_cam->num_faces; f++) {
-                glBegin(GL_POLYGON);
 
-                /*v_aux = aux_cam->face_table[f].vertex_table[0];
-                if (elemento != OBJETOCAMARA) {
-                    cpt = get_face_camera_vector(_selected_camera, aux_cam->vertex_table[v_aux].coord, mcam);
-                } else {
-                    cpt = get_face_camera_vector(_object_camera, aux_cam->vertex_table[v_aux].coord, mcam);
-                }*/
+                v_aux = aux_cam->face_table[f].vertex_table[0];
 
-                /*glNormal3d(aux_cam->face_table[f].normal.x,
-                           aux_cam->face_table[f].normal.y,
-                           aux_cam->face_table[f].normal.z);*/
-                //if(producto_escalar(cpt, aux_cam->face_table[f].normal) > 0) {
-                for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
-                    v_index = aux_cam->face_table[f].vertex_table[v];
-                    glVertex3d(aux_cam->vertex_table[v_index].coord.x,
-                               aux_cam->vertex_table[v_index].coord.y,
-                               aux_cam->vertex_table[v_index].coord.z);
+                if(producto_escalar(aux_cam->vertex_table[v_aux].coord, aux_cam->face_table[f].normal, aux_cam->minv, cam2->minv) > 0.0) {
+                    glBegin(GL_POLYGON);
 
+                    if(shade == FLAT) {
+                        glNormal3d(aux_cam->face_table[f].normal.x,
+                                   aux_cam->face_table[f].normal.y,
+                                   aux_cam->face_table[f].normal.z);
+                    }
+
+                    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
+                        v_index = aux_cam->face_table[f].vertex_table[v];
+
+                        if(shade == SMOOTH) {
+                            glNormal3d(aux_cam->vertex_table[v_index].normal.x,
+                                       aux_cam->vertex_table[v_index].normal.y,
+                                       aux_cam->vertex_table[v_index].normal.z);
+                        }
+
+                        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
+                                   aux_cam->vertex_table[v_index].coord.y,
+                                   aux_cam->vertex_table[v_index].coord.z);
+
+                    }
+                    glEnd();
                 }
-                //}
-                glEnd();
+
             }
             glPopMatrix();
         }

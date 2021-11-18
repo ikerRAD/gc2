@@ -76,6 +76,9 @@
 #define VUELO                               0
 #define ANALISIS                            1
 
+#define FLAT                                0
+#define SMOOTH                              1
+
 /** STRUCTURES **/
 
 /****************************
@@ -109,6 +112,7 @@ typedef struct {
 typedef struct {
     point3 coord;                       /* coordinates,x, y, z */
     GLint num_faces;                    /* number of faces that share this vertex */
+    vector3 normal;                     /* normal vector of the vertex */
 } vertex;
 
 /****************************

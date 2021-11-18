@@ -49,8 +49,8 @@ vector3 calculate_surface_normal(int index1, int index2, int index3, vertex *ver
     v.y = vertex_table[index3].coord.y - vertex_table[index1].coord.y;
     v.z = vertex_table[index3].coord.z - vertex_table[index1].coord.z;
 
-    normal_vector.x = (u.y * v.z) - (u.z - v.y);
-    normal_vector.y = (u.z * v.x) - (u.x - v.z);
+    normal_vector.x = (u.y * v.z) - (u.z * v.y);
+    normal_vector.y = (u.z * v.x) - (u.x * v.z);
     normal_vector.z = (u.x * v.y) - (u.y * v.x);
 
     return normal_vector;
@@ -58,11 +58,15 @@ vector3 calculate_surface_normal(int index1, int index2, int index3, vertex *ver
 
 
 void normal_vectors(object3d *obj){
-    GLint f;
-    GLint index1, index2, index3;
-    GLfloat norma;
+    GLint f, v;
+    GLint index1, index2, index3, vindex;
+    GLdouble norma;
     vector3 vector_normal;
 
+    //inicializamos los vectores normales de los vertices
+    for(v = 0; v<obj->num_vertices; v++){
+        obj->vertex_table[v].normal = (vector3){.x = 0, .y = 0, .z = 0};
+    }
 
     for (f = 0; f < obj->num_faces; f++){
         index1 = obj->face_table[f].vertex_table[0];
@@ -76,11 +80,31 @@ void normal_vectors(object3d *obj){
         norma = sqrt(pow(obj->face_table[f].normal.x, 2) +
                      pow(obj->face_table[f].normal.y, 2) +
                      pow(obj->face_table[f].normal.z, 2));
+
         //canonizamos los vectores
         obj->face_table[f].normal.x /= norma;
         obj->face_table[f].normal.y /= norma;
         obj->face_table[f].normal.z /= norma;
 
+        //sumamos el vector calculado a los vectores normales de los vertices de la cara
+        for(v = 0; v<obj->face_table[f].num_vertices; v++){
+            vindex = obj->face_table[f].vertex_table[v];
+            obj->vertex_table[vindex].normal.x += obj->face_table[f].normal.x;
+            obj->vertex_table[vindex].normal.y += obj->face_table[f].normal.y;
+            obj->vertex_table[vindex].normal.z += obj->face_table[f].normal.z;
+        }
+
+    }
+
+    for(v = 0; v<obj->num_vertices; v++){
+        norma = sqrt(pow(obj->vertex_table[v].normal.x, 2) +
+                     pow(obj->vertex_table[v].normal.y, 2) +
+                     pow(obj->vertex_table[v].normal.z, 2));
+
+        //canonizamos los vectores
+        obj->vertex_table[v].normal.x /= norma;
+        obj->vertex_table[v].normal.y /= norma;
+        obj->vertex_table[v].normal.z /= norma;
     }
 
 }

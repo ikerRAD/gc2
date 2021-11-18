@@ -13,10 +13,6 @@ extern camera  * _first_camera;
 extern camera * _selected_camera;
 extern camera * _object_camera;
 
-extern GLdouble _ortho_x_min,_ortho_x_max;
-extern GLdouble _ortho_y_min,_ortho_y_max;
-extern GLdouble _ortho_z_min,_ortho_z_max;
-
 extern int modo;
 extern int sis_referencia;
 extern int elemento;
@@ -154,14 +150,14 @@ void esp_keyboard(int key, int x, int y){
                             aplicar_transformaciones(up_rotacion);
                             modo = TRASLACION;
                         }else{
-                            modo_analisis(-1,0);
+                            modo_analisis(1,0);
                         }
 
                     }else if(modo == ROTACION){
                         if(modo_camara == VUELO){
                             aplicar_transformaciones(up_rotacion);
                         }else{
-                            modo_analisis(-1,0);
+                            modo_analisis(1,0);
                         }
                     }else if(modo == ESCALADO){
                         _selected_camera->proj->top -= 0.01;
@@ -185,14 +181,14 @@ void esp_keyboard(int key, int x, int y){
                             aplicar_transformaciones(down_rotacion);
                             modo = TRASLACION;
                         }else{
-                            modo_analisis(1,0);
+                            modo_analisis(-1,0);
                         }
 
                     }else if(modo == ROTACION){
                         if(modo_camara == VUELO){
                             aplicar_transformaciones(down_rotacion);
                         }else{
-                            modo_analisis(1,0);
+                            modo_analisis(-1,0);
                         }
                     }else if(modo == ESCALADO){
                         _selected_camera->proj->top += 0.01;
@@ -216,14 +212,14 @@ void esp_keyboard(int key, int x, int y){
                             aplicar_transformaciones(right_rotacion);
                             modo = TRASLACION;
                         }else{
-                            modo_analisis(0,-1);
+                            modo_analisis(0,1);
                         }
 
                     }else if(modo == ROTACION){
                         if(modo_camara == VUELO){
                             aplicar_transformaciones(right_rotacion);
                         }else{
-                            modo_analisis(0,-1);
+                            modo_analisis(0,1);
                         }
                     }else if(modo == ESCALADO){
                         _selected_camera->proj->left += 0.01;
@@ -247,14 +243,14 @@ void esp_keyboard(int key, int x, int y){
                             aplicar_transformaciones(left_rotacion);
                             modo = TRASLACION;
                         }else{
-                            modo_analisis(0,1);
+                            modo_analisis(0,-1);
                         }
 
                     }else if(modo == ROTACION){
                         if(modo_camara == VUELO){
                             aplicar_transformaciones(left_rotacion);
                         }else{
-                            modo_analisis(0,1);
+                            modo_analisis(0,-1);
                         }
                     }else if(modo == ESCALADO){
                         _selected_camera->proj->left -= 0.01;
@@ -274,7 +270,7 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){
                     if (modo == TRASLACION){
                         if (modo_camara == ANALISIS){
-                            if (distancia_camara_objeto() > 0.5){
+                            if (distancia_camara_objeto() > 1.0){
                                 /*camara = (vector3 *)malloc(sizeof(vector3));
                                 *camara = (vector3){
                                         .x = -_selected_camera->minv[8],

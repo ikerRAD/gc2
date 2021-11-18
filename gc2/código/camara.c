@@ -200,17 +200,17 @@ void add_camera_mode_obj(object3d *obj)
 {
 
     _object_camera->minv[0] = obj->matrix_table->matriz[0];
-    _object_camera->minv[1] = obj->matrix_table->matriz[4];
-    _object_camera->minv[2] = -obj->matrix_table->matriz[8];
+    _object_camera->minv[1] = obj->matrix_table->matriz[1];
+    _object_camera->minv[2] = obj->matrix_table->matriz[2];
     _object_camera->minv[3] = 0;
 
-    _object_camera->minv[4] = obj->matrix_table->matriz[1];
+    _object_camera->minv[4] = obj->matrix_table->matriz[4];
     _object_camera->minv[5] = obj->matrix_table->matriz[5];
-    _object_camera->minv[6] = -obj->matrix_table->matriz[9];
+    _object_camera->minv[6] = obj->matrix_table->matriz[6];
     _object_camera->minv[7] = 0;
 
-    _object_camera->minv[8] = obj->matrix_table->matriz[2];
-    _object_camera->minv[9] = obj->matrix_table->matriz[6];
+    _object_camera->minv[8] = obj->matrix_table->matriz[8];
+    _object_camera->minv[9] = obj->matrix_table->matriz[9];
     _object_camera->minv[10] = -obj->matrix_table->matriz[10];
     _object_camera->minv[11] = 0;
 
@@ -219,36 +219,8 @@ void add_camera_mode_obj(object3d *obj)
     _object_camera->minv[14] = obj->matrix_table->matriz[14];
     _object_camera->minv[15] = 1;
 
+
     matriz_inversa(_object_camera);
-}
-
-/**
- * Obtenemos una matriz de objeto ordenada como tal
- * @param m matriz de ojeto de la cámara
- * @param mobj matriz a devolver
- */
-void set_objectlike_matrix(GLfloat *m, GLfloat *mobj){
-
-    mobj[0] = m[0];
-    mobj[4] = m[1];
-    mobj[8] = -m[2];
-
-    mobj[1] = m[4];
-    mobj[5] = m[5];
-    mobj[9] = -m[6];
-
-    mobj[2] = m[8];
-    mobj[6] = m[9];
-    mobj[10] = -m[10];
-
-    mobj[12] = m[12];
-    mobj[13] = m[13];
-    mobj[14] = m[14];
-    mobj[15] = 1;
-    mobj[3] = 0;
-    mobj[7] = 0;
-    mobj[11] = 0;
-
 }
 
 
