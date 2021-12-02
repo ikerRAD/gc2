@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
+//git
 extern object3d *_selected_object;
 extern material_light *ruby, *obsidian ,*gold;
 extern int _selected_light;
