@@ -122,7 +122,7 @@ void display(void) {
     }
 
     /* Clear the screen */
-    glClear(GL_COLOR_BUFFER_BIT);//GL_DEPTH_TEST | GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
 
     /* Define the projection */
     glMatrixMode(GL_PROJECTION);

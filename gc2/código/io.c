@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "transformaciones.h"
 #include "camara.h"
+#include "iluminacion.h"
 
 
 extern object3d * _first_object;
@@ -47,6 +48,12 @@ extern vector3 *menos_escalado;
 
 extern vector3 *mas_escalado;
 
+extern objetos_luz global_lights[];
+extern int _selected_light;
+extern int luz;
+
+extern material_light *ruby, *obsidian;
+
 /**
  * @brief This function just prints information about the use
  * of the keys
@@ -56,29 +63,37 @@ void print_help(){
     printf("objetos 3D.  \n\n");
     printf("\n\n");
     printf("FUNCIONES PRINCIPALES \n");
-    printf("<?>\t\t Visualizar ayuda \n");
-    printf("<ESC>\t\t Salir del programa \n");
-    printf("<F,f>\t\t Cargar un objeto\n");
-    printf("<TAB>\t\t Elegir un objeto entre los cargados\n");
-    printf("<DEL>\t\t Borrar el objeto seleccionado\n");
-    printf("<K>\t\t Visualizar punto de vista de los objetos (Si vuelves a pulsar K, o cambias de elemento, saldrás de este modo)\n");
+    printf("<?>\t\t Visualizar ayuda. \n");
+    printf("<ESC>\t\t Salir del programa. \n");
+    printf("<F,f>\t\t Cargar un objeto.\n");
+    printf("<TAB>\t\t Elegir un objeto entre los cargados.\n");
+    printf("<DEL>\t\t Borrar el objeto seleccionado.\n");
+    printf("<K>\t\t Visualizar punto de vista de los objetos (Si vuelves a pulsar K, o cambias de elemento, saldrás de este modo).\n");
     printf("<k>\t\t Cambiar de cámara.\n");
     printf("<n>\t\t Añadir nueva cámara.\n");
     printf("<P,p>\t\t Cambio de tipo de proyección: perspectiva (por defecto)/ paralela.\n");
     printf("\n\n");
-    printf("MODOS DE TRANSFORMACIÓN \n");
-    printf("<T,t>\t\t Modo de traslación (modo por defecto)\n");
-    printf("<R,r>\t\t Modo de rotación\n");
-    printf("<E,e>\t\t Modo de escalado / cambio de volumen\n");
+    printf("FUNCIONES DE ILUMINACIÓN \n");
+    printf("<f9>\t\t Activar/Desactivar iluminación. \n");
+    printf("<f1-f4>\t\t Encender/Apagar fuente de luz correspondiente del. Bombilla, sol, foco del objeto seleccionado y foco de la cámara. \n");
+    printf("<f5-f8>\t\t Encender/Apagar fuente de luz correspondiente del. \n");
+    printf("<1-8>\t\t Seleccionar la fuente de luz correspondiente. \n");
+    printf("<0>\t\t Asignar tipo de fuente de luz a fuente de 5-8 seleccionada. \n");
+    printf("<f12>\t\t Cambiar tipo de iluminación del objeto seleccionado. \n");
     printf("\n\n");
-    printf("SISTEMA DE REFERENCIA (EN MODO OBJETO) O MODO DE CÁMARA (EN MODO CÁMARA) \n");
-    printf("<G,g>\t\t Transformaciones globales o modo análisis\n");
-    printf("<L,l>\t\t Transformaciones locales o modo vuelo(por defecto)\n");
+    printf("MODOS DE TRANSFORMACIÓN \n");
+    printf("<T,t>\t\t Modo de traslación (modo por defecto).\n");
+    printf("<R,r>\t\t Modo de rotación.\n");
+    printf("<E,e>\t\t Modo de escalado / cambio de volumen.\n");
+    printf("\n\n");
+    printf("SISTEMA DE REFERENCIA (EN MODO OBJETO) O MODO DE CÁMARA (EN MODO CÁMARA). \n");
+    printf("<G,g>\t\t Transformaciones globales o modo análisis.\n");
+    printf("<L,l>\t\t Transformaciones locales o modo vuelo(por defecto).\n");
     printf("\n\n");
     printf("ELEMENTO A TRANSFORMAR \n");
-    printf("<O,o>\t\t Transformaciones a objeto (modo por defecto)\n");
-    printf("<C,c>\t\t Transformaciones a cámara\n");
-    printf("<I,i>\t\t Transformaciones a iluminación (NO IMPLEMENTADO)\n");
+    printf("<O,o>\t\t Transformaciones a objeto (modo por defecto).\n");
+    printf("<C,c>\t\t Transformaciones a cámara.\n");
+    printf("<A,a>\t\t Transformaciones a iluminación.\n");
     printf("\n\n");
     printf("MOVIMIENTOS POSIBLES \n");
     printf("<ARRIBA>\n");
@@ -87,8 +102,8 @@ void print_help(){
     printf("<DERECHA>\n");
     printf("<AVPAG>\n");
     printf("<REPAG>\n");
-    printf("<+> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN)\n");
-    printf("<-> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN)\n");
+    printf("<+> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN/SI LA FUENTE DE LUZ ES UN FOCO)\n");
+    printf("<-> (SOLO EN MODO ESCALADO/CAMBIO DE VOLUMEN/SI LA FUENTE DE LUZ ES UN FOCO)\n");
 }
 
 /**
@@ -336,6 +351,36 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->far += 0.01;
                     }
                 }
+                break;
+            //TODO
+            case GLUT_KEY_F1:
+                break;
+
+            case GLUT_KEY_F2:
+                break;
+
+            case GLUT_KEY_F3:
+                break;
+
+            case GLUT_KEY_F4:
+                break;
+
+            case GLUT_KEY_F5:
+                break;
+
+            case GLUT_KEY_F6:
+                break;
+
+            case GLUT_KEY_F7:
+                break;
+
+            case GLUT_KEY_F8:
+                break;
+
+            case GLUT_KEY_F9:
+                break;
+
+            case GLUT_KEY_F12:
                 break;
 
         }
@@ -605,8 +650,8 @@ void keyboard(unsigned char key, int x, int y) {
         }
         break;
 
-    case 'i':
-    case 'I':
+    case 'a':
+    case 'A':
         if(elemento!=ILUMINACION) {
             printf("Elemento cambiado a iluminación\n");
             elemento=ILUMINACION;
@@ -682,6 +727,66 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_camera->proj->near = 0.1;
                 _selected_camera->proj->far = 1000.0;
             }
+        }
+        break;
+    //TODO
+    case '0':
+        anadir_luz();
+        break;
+
+    case '1':
+        if(_selected_light != 0) {
+            _selected_light = 0;
+            printf("SOL seleccionado.\n");
+        }
+        break;
+
+    case '2':
+        if(_selected_light != 1) {
+            _selected_light = 1;
+            printf("BOMBILLA seleccionada.\n");
+        }
+        break;
+
+    case '3':
+        if(_selected_light != 2) {
+            _selected_light = 2;
+            printf("FOCO seleccionado.\n");
+        }
+        break;
+
+    case '4':
+        if(_selected_light != 3) {
+            _selected_light = 3;
+            printf("FOCO-CÁMARA seleccionado.\n");
+        }
+        break;
+
+    case '5':
+        if(_selected_light != 4) {
+            _selected_light = 4;
+            printf("Seleccionada LUZ 5.\n");
+        }
+        break;
+
+    case '6':
+        if(_selected_light != 5) {
+            _selected_light = 5;
+            printf("Seleccionada LUZ 6.\n");
+        }
+        break;
+
+    case '7':
+        if(_selected_light != 6) {
+            _selected_light = 6;
+            printf("Seleccionada LUZ 7.\n");
+        }
+        break;
+
+    case '8':
+        if(_selected_light != 7) {
+            _selected_light = 7;
+            printf("Seleccionada LUZ 8.\n");
         }
         break;
 

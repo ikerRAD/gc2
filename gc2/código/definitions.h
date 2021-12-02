@@ -79,6 +79,14 @@
 #define FLAT                                0
 #define SMOOTH                              1
 
+#define ACTIVADA                            1
+#define DESACTIVADA                         0
+
+#define SOL                                 0
+#define BOMBILLA                            1
+#define FOCO                                2
+#define FOCO_OBJETO                         3
+
 /** STRUCTURES **/
 
 /****************************
@@ -136,6 +144,19 @@ struct matrices{
     struct matrices *next;
 };
 typedef struct matrices matrices;
+
+
+
+typedef struct
+{
+    GLfloat m_diffuse[4];
+    GLfloat m_ambient[4];
+    GLfloat m_specular[4];
+    GLfloat m_position[4];
+    GLfloat no_shininess[1];
+}material_light;
+
+
 /****************************
  * Structure to store a     *
  * pile of 3D objects       *
@@ -149,6 +170,8 @@ struct object3d{
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
     struct object3d *next;              /* next element in the pile of objects */
+    GLint shade;
+    material_light *material_light;
 };
 
 typedef struct object3d object3d;
@@ -182,9 +205,25 @@ struct camera{
     struct camera *next;                /* next element in the pile of cameras */
     int type;                           /* projection type*/
     projection *proj;                    /* projection data*/
+    GLint shade;
+    material_light *material_light;
 };
 
 typedef struct camera camera;
+
+
+typedef struct
+{
+    GLfloat diffuse[4];
+    GLfloat ambient[4];
+    GLfloat specular[4];
+    GLfloat position[4];
+    GLint is_on;
+    GLint type;
+    GLfloat spot_direction[3];
+    GLfloat m_obj[16];
+    GLfloat cut_off;
+}objetos_luz;
 
 
 #endif // DEFINITIONS_H
