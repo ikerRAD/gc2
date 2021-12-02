@@ -154,8 +154,19 @@ typedef struct
     GLfloat m_specular[4];
     GLfloat m_position[4];
     GLfloat no_shininess[1];
-}material_light;
+} material_light;
 
+typedef struct {
+    point3 pt1;
+    point3 pt2;
+    vector3 vn1;
+    vector3 vn2;
+} arista;
+
+typedef struct
+{
+   arista aristas[12];
+} selected_box;
 
 /****************************
  * Structure to store a     *
@@ -172,6 +183,7 @@ struct object3d{
     struct object3d *next;              /* next element in the pile of objects */
     GLint shade;
     material_light *material_light;
+    selected_box box;
 };
 
 typedef struct object3d object3d;

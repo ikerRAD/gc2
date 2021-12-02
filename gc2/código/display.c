@@ -171,11 +171,11 @@ void display(void) {
         /*Si estamos proyectando lo que ve el objeto, no enseñamos el objeto*/
         if(elemento != OBJETOCAMARA || aux_obj != _selected_object) {
             /* Select the color, depending on whether the current object is the selected one or not */
-            if (aux_obj == _selected_object) {
+            /*if (aux_obj == _selected_object) {
                 glColor3f(KG_COL_SELECTED_R, KG_COL_SELECTED_G, KG_COL_SELECTED_B);
             } else {
                 glColor3f(KG_COL_NONSELECTED_R, KG_COL_NONSELECTED_G, KG_COL_NONSELECTED_B);
-            }
+            }*/
 
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
             //glLoadIdentity();
@@ -211,6 +211,28 @@ void display(void) {
 
                     }
                     glEnd();
+                }
+
+            }
+
+            //dibujar solo las líneas que se ven de la caja de seleccionado
+            if(aux_obj == _selected_object){
+                glColor3f(1, 1, 1);
+                for(int l = 0; l<12; l++){
+                    if(producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn1, aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ||
+                       producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn2, aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ){
+                        glBegin(GL_LINES);
+
+                        glVertex3d(aux_obj->box.aristas[l].pt1.x,
+                                   aux_obj->box.aristas[l].pt1.y,
+                                   aux_obj->box.aristas[l].pt1.z);
+
+                        glVertex3d(aux_obj->box.aristas[l].pt2.x,
+                                   aux_obj->box.aristas[l].pt2.y,
+                                   aux_obj->box.aristas[l].pt2.z);
+
+                        glEnd();
+                    }
                 }
 
             }

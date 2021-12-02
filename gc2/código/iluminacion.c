@@ -5,7 +5,7 @@
 #include <math.h>
 //git
 extern object3d *_selected_object;
-extern material_light *ruby, *obsidian ,*gold;
+extern material_light *ruby, *obsidian ,*gold, *mat_camara;
 extern int _selected_light;
 extern camera * _selected_camera;
 
@@ -348,6 +348,7 @@ void inicializar_materiales(){
     ruby = (material_light*)malloc(sizeof(material_light));
     obsidian = (material_light*)malloc(sizeof(material_light));
     gold = (material_light*)malloc(sizeof(material_light));
+    mat_camara = (material_light*)malloc(sizeof(material_light));
 
     ruby->m_ambient[0] = 0.1745f;
     ruby->m_ambient[1] = 0.01175f;
@@ -390,6 +391,21 @@ void inicializar_materiales(){
     gold->m_specular[2] = 0.208006f;
     gold->m_specular[3] = 1.0f;
     gold->no_shininess[0] = 83.2f;
+
+    //ESMERALDA
+    mat_camara->m_ambient[0] =0.0215f;
+    mat_camara->m_ambient[1] = 0.1745f;
+    mat_camara->m_ambient[2] = 0.0215f;
+    mat_camara->m_ambient[3] = 0.55f ;
+    mat_camara->m_diffuse[0] = 0.07568f;
+    mat_camara->m_diffuse[1] = 0.61424f;
+    mat_camara->m_diffuse[2] = 0.07568f;
+    mat_camara->m_diffuse[3] = 0.55f ;
+    mat_camara->m_specular[0] = 0.633f;
+    mat_camara->m_specular[1] = 0.727811f;
+    mat_camara->m_specular[2] = 0.633f;
+    mat_camara->m_specular[3] = 0.55f ;
+    mat_camara->no_shininess[0] = 76.8f;
 }
 
 void anadir_material(){

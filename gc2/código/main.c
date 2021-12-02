@@ -23,7 +23,7 @@ int _selected_light = 0;
 int luz = ACTIVADA;
 
 
-material_light *ruby, *obsidian, *gold;
+material_light *ruby, *obsidian, *gold, *mat_camara;
 
 int modo = TRASLACION;
 int sis_referencia = LOCALES;
