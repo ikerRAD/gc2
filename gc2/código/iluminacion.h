@@ -9,6 +9,8 @@ void m_foco();
 
 void foco_obj();
 
+void foco_camara();
+
 void anadir_luz();
 
 void inicializar_materiales();

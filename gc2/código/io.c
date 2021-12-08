@@ -450,6 +450,10 @@ void keyboard(unsigned char key, int x, int y) {
                         add_camera_mode_obj(_selected_object);
                     }
 
+                    anadir_material();
+                    _selected_object->shade = FLAT;
+                    foco_obj();
+
                     printf("%s\n", KG_MSSG_FILEREAD);
                     break;
             }
@@ -459,7 +463,10 @@ void keyboard(unsigned char key, int x, int y) {
             if (_selected_object != 0) {
                 _selected_object = _selected_object->next;
                 /*The selection is circular, thus if we move out of the list we go back to the first element*/
-                if (_selected_object == 0) _selected_object = _first_object;
+                if (_selected_object == 0) {
+                    _selected_object = _first_object;
+                }
+                foco_obj();
 
                 if(elemento == CAMARA && modo_camara == ANALISIS){
                     centre_camera_to_obj(_selected_object);
@@ -513,6 +520,7 @@ void keyboard(unsigned char key, int x, int y) {
                         add_camera_mode_obj(_selected_object);
                     }
                 }
+                foco_obj();
 
             }
             break;
@@ -534,6 +542,10 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_camera->proj->left = (midx - wd) / 2;
                 _selected_camera->proj->bottom = (midy + he) / 2;
                 _selected_camera->proj->top = (midy - he) / 2;
+            }else if(elemento == ILUMINACION &&
+                    (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
+                    && global_lights[_selected_light].is_on == 1){
+                global_lights[_selected_light].cut_off -= 5;
             }
             break;
 
@@ -554,6 +566,10 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_camera->proj->left = (midx - wd) / 2;
                 _selected_camera->proj->bottom = (midy + he) / 2;
                 _selected_camera->proj->top = (midy - he) / 2;
+            }else if(elemento == ILUMINACION &&
+                     (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
+                     && global_lights[_selected_light].is_on == 1){
+                global_lights[_selected_light].cut_off += 5;
             }
             break;
 
@@ -583,9 +599,11 @@ void keyboard(unsigned char key, int x, int y) {
 
         case 'e':
         case 'E':
-            if (modo != ESCALADO) {
+            if (modo != ESCALADO && elemento != ILUMINACION) {
                 printf("Modo cambiado a escalado o volumen de visión\n");
                 modo = ESCALADO;
+            }else if(elemento == ILUMINACION){
+                printf("En la iluminación no hay escalado, utiliza los otros modos de transformación\n");
             }
             break;
 
@@ -655,6 +673,10 @@ void keyboard(unsigned char key, int x, int y) {
         if(elemento!=ILUMINACION) {
             printf("Elemento cambiado a iluminación\n");
             elemento=ILUMINACION;
+            if(modo == ESCALADO){
+                modo = TRASLACION;
+                printf("El escalado no existe en la iluminación. Modo cambiado a traslación\n");
+            }
         }
         break;
 
@@ -666,6 +688,7 @@ void keyboard(unsigned char key, int x, int y) {
                 if(elemento == OBJETOCAMARA){
                     add_camera_mode_obj(_selected_object);
                 }
+                foco_obj();
             }
         }
 
@@ -694,6 +717,7 @@ void keyboard(unsigned char key, int x, int y) {
         if(modo_camara == ANALISIS && _selected_object != 0){
             centre_camera_to_obj(_selected_object);
         }
+        foco_camara();
         break;
 
     case 'n'://nueva camara
@@ -701,6 +725,7 @@ void keyboard(unsigned char key, int x, int y) {
         if(modo_camara == ANALISIS && _selected_object != 0){
             centre_camera_to_obj(_selected_object);
         }
+        foco_camara();
         break;
 
     case 'p':// cambiar perspectiva (propia de cada cámara)
@@ -729,7 +754,7 @@ void keyboard(unsigned char key, int x, int y) {
             }
         }
         break;
-    //TODO
+
     case '0':
         anadir_luz();
         break;
@@ -737,21 +762,21 @@ void keyboard(unsigned char key, int x, int y) {
     case '1':
         if(_selected_light != 0) {
             _selected_light = 0;
-            printf("SOL seleccionado.\n");
+            printf("BOMBILLA seleccionada.\n");
         }
         break;
 
     case '2':
         if(_selected_light != 1) {
             _selected_light = 1;
-            printf("BOMBILLA seleccionada.\n");
+            printf("SOL seleccionada.\n");
         }
         break;
 
     case '3':
         if(_selected_light != 2) {
             _selected_light = 2;
-            printf("FOCO seleccionado.\n");
+            printf("FOCO-OBJETO seleccionado.\n");
         }
         break;
 

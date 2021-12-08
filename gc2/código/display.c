@@ -164,7 +164,15 @@ void display(void) {
     }
 
     /*First, we draw the axes*/
-    draw_axes();
+    //draw_axes();
+    for (int i = 0; i < 8; i++){
+        if (global_lights[i].is_on == 1){
+            glPushMatrix();
+            glMultMatrixf(global_lights[i].m_obj);
+            put_light(i);
+            glPopMatrix();
+        }
+    }
 
     /*Now each of the objects in the list*/
     while (aux_obj != 0) {
@@ -177,8 +185,12 @@ void display(void) {
                 glColor3f(KG_COL_NONSELECTED_R, KG_COL_NONSELECTED_G, KG_COL_NONSELECTED_B);
             }*/
 
+            glMaterialfv(GL_FRONT, GL_AMBIENT, aux_obj->material_light->m_ambient);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_obj->material_light->m_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, aux_obj->material_light->m_specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, aux_obj->material_light->no_shininess);
+
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
-            //glLoadIdentity();
             glPushMatrix();
 
             glMultMatrixf(aux_obj->matrix_table->matriz);
@@ -190,7 +202,7 @@ void display(void) {
 
                     glBegin(GL_POLYGON);
 
-                    if(shade == FLAT) {
+                    if(aux_obj->shade == FLAT) {
                         glNormal3d(aux_obj->face_table[f].normal.x,
                                    aux_obj->face_table[f].normal.y,
                                    aux_obj->face_table[f].normal.z);
@@ -199,7 +211,7 @@ void display(void) {
                     for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
                         v_index = aux_obj->face_table[f].vertex_table[v];
 
-                        if(shade == SMOOTH) {
+                        if(aux_obj->shade == SMOOTH) {
                             glNormal3d(aux_obj->vertex_table[v_index].normal.x,
                                        aux_obj->vertex_table[v_index].normal.y,
                                        aux_obj->vertex_table[v_index].normal.z);
@@ -262,11 +274,17 @@ void display(void) {
     /*Now each of the cameras in the list*/
 
     /* Select the color*/
-    glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
+    //glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
 
     while (aux_cam != 0) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
         if(elemento == OBJETOCAMARA || aux_cam != _selected_camera) {
+
+            glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
+            glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
+            glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
+            glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
+
 
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
             //glLoadIdentity();
@@ -280,20 +298,20 @@ void display(void) {
                 if(producto_escalar(aux_cam->vertex_table[v_aux].coord, aux_cam->face_table[f].normal, aux_cam->minv, cam2->minv) > 0.0) {
                     glBegin(GL_POLYGON);
 
-                    if(shade == FLAT) {
-                        glNormal3d(aux_cam->face_table[f].normal.x,
-                                   aux_cam->face_table[f].normal.y,
-                                   aux_cam->face_table[f].normal.z);
-                    }
+                    //if(shade == FLAT) {
+                    glNormal3d(aux_cam->face_table[f].normal.x,
+                               aux_cam->face_table[f].normal.y,
+                               aux_cam->face_table[f].normal.z);
+                    //}
 
                     for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
                         v_index = aux_cam->face_table[f].vertex_table[v];
 
-                        if(shade == SMOOTH) {
+                        /*if(shade == SMOOTH) {
                             glNormal3d(aux_cam->vertex_table[v_index].normal.x,
                                        aux_cam->vertex_table[v_index].normal.y,
                                        aux_cam->vertex_table[v_index].normal.z);
-                        }
+                        }*/
 
                         glVertex3d(aux_cam->vertex_table[v_index].coord.x,
                                    aux_cam->vertex_table[v_index].coord.y,

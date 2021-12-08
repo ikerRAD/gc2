@@ -39,7 +39,6 @@ void put_light(GLint i){
             glLightfv(GL_LIGHT3, GL_DIFFUSE, global_lights[i].diffuse);
             glLightfv(GL_LIGHT3, GL_SPECULAR, global_lights[i].specular);
             glLightfv(GL_LIGHT3, GL_POSITION, global_lights[i].position);
-
             glLightfv(GL_LIGHT3, GL_SPOT_DIRECTION, global_lights[i].spot_direction);
             glLightf(GL_LIGHT3, GL_SPOT_CUTOFF, global_lights[i].cut_off);
 
@@ -124,7 +123,7 @@ void inicializar_luces(){
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    put_light(0);
+    //put_light(0);
     glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[0].m_obj);
     global_lights[0].type = BOMBILLA;
     global_lights[0].is_on = 0;
@@ -151,10 +150,19 @@ void inicializar_luces(){
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    put_light(1);
+    //put_light(1);
     glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[1].m_obj);
     global_lights[1].type = SOL;
     global_lights[1].is_on = 1;
+
+
+    global_lights[2].type = FOCO_OBJETO;
+    global_lights[3].type = FOCO_OBJETO;
+    for(int i=2; i<8; i++) {
+        global_lights[i].is_on = 0;
+    }
+
+    foco_camara();
 
 }
 
@@ -164,35 +172,33 @@ void foco_camara(){
     global_lights[3].position[2] = (_selected_camera->max.z + _selected_camera->min.z) / 2;
     global_lights[3].position[3] = 1.0f;
 
-    global_lights[2].ambient[0] = 1.5f;
-    global_lights[2].ambient[1] = 1.5f;
-    global_lights[2].ambient[2] = 1.5f;
-    global_lights[2].ambient[3] = 1.0f;
+    global_lights[3].ambient[0] = 1.5f;
+    global_lights[3].ambient[1] = 1.5f;
+    global_lights[3].ambient[2] = 1.5f;
+    global_lights[3].ambient[3] = 1.0f;
 
-    global_lights[2].diffuse[0] = 1.5f;
-    global_lights[2].diffuse[1] = 1.5f;
-    global_lights[2].diffuse[2] = 1.5f;
-    global_lights[2].diffuse[3] = 1.0f;
+    global_lights[3].diffuse[0] = 1.5f;
+    global_lights[3].diffuse[1] = 1.5f;
+    global_lights[3].diffuse[2] = 1.5f;
+    global_lights[3].diffuse[3] = 1.0f;
 
-    global_lights[2].specular[0] = 1.0f;
-    global_lights[2].specular[1] = 1.0f;
-    global_lights[2].specular[2] = 1.0f;
-    global_lights[2].specular[3] = 1.0f;
+    global_lights[3].specular[0] = 1.0f;
+    global_lights[3].specular[1] = 1.0f;
+    global_lights[3].specular[2] = 1.0f;
+    global_lights[3].specular[3] = 1.0f;
 
-    global_lights[2].cut_off = 45.0f;
+    global_lights[3].cut_off = 45.0f;
 
-    global_lights[2].spot_direction[0] = 0.0f;
-    global_lights[2].spot_direction[1] = 0.0f;
-    global_lights[2].spot_direction[2] = 1.0f;
+    global_lights[3].spot_direction[0] = 0.0f;
+    global_lights[3].spot_direction[1] = 0.0f;
+    global_lights[3].spot_direction[2] = 1.0f;
 
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    put_light(3);
+    //put_light(3);
     m_foco(3);
-    glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[3].m_obj);
-    global_lights[3].type = FOCO_OBJETO;
-    global_lights[3].is_on = 0;
+
 }
 
 void m_foco(int f){
@@ -207,42 +213,44 @@ void m_foco(int f){
 }
 
 void foco_obj(){
-    global_lights[2].position[0] = (_selected_object->max.x + _selected_object->min.x) / 2;
-    global_lights[2].position[1] = (_selected_object->max.y + _selected_object->min.y) / 2;
-    global_lights[2].position[2] = (_selected_object->max.z + _selected_object->min.z) / 2;
-    global_lights[2].position[3] = 1;
+    if(_selected_object!=0) {
+        global_lights[2].position[0] = (_selected_object->max.x + _selected_object->min.x) / 2;
+        global_lights[2].position[1] = (_selected_object->max.y + _selected_object->min.y) / 2;
+        global_lights[2].position[2] = (_selected_object->max.z + _selected_object->min.z) / 2;
+        global_lights[2].position[3] = 1;
 
-    global_lights[2].ambient[0] = 1.5f;
-    global_lights[2].ambient[1] = 1.5f;
-    global_lights[2].ambient[2] = 1.5f;
-    global_lights[2].ambient[3] = 1.0f;
+        global_lights[2].ambient[0] = 1.5f;
+        global_lights[2].ambient[1] = 1.5f;
+        global_lights[2].ambient[2] = 1.5f;
+        global_lights[2].ambient[3] = 1.0f;
 
-    global_lights[2].diffuse[0] = 1.5f;
-    global_lights[2].diffuse[1] = 1.5f;
-    global_lights[2].diffuse[2] = 1.5f;
-    global_lights[2].diffuse[3] = 1.0f;
+        global_lights[2].diffuse[0] = 1.5f;
+        global_lights[2].diffuse[1] = 1.5f;
+        global_lights[2].diffuse[2] = 1.5f;
+        global_lights[2].diffuse[3] = 1.0f;
 
-    global_lights[2].specular[0] = 1.0f;
-    global_lights[2].specular[1] = 1.0f;
-    global_lights[2].specular[2] = 1.0f;
-    global_lights[2].specular[3] = 1.0f;
+        global_lights[2].specular[0] = 1.0f;
+        global_lights[2].specular[1] = 1.0f;
+        global_lights[2].specular[2] = 1.0f;
+        global_lights[2].specular[3] = 1.0f;
 
-    global_lights[2].cut_off = 45.0f;
+        global_lights[2].cut_off = 45.0f;
 
-    global_lights[2].spot_direction[0] = 0.0f;
-    global_lights[2].spot_direction[1] = 0.0f;
-    global_lights[2].spot_direction[2] = 1.0f;
+        global_lights[2].spot_direction[0] = 0.0f;
+        global_lights[2].spot_direction[1] = 0.0f;
+        global_lights[2].spot_direction[2] = 1.0f;
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    put_light(2);
-    m_foco(2);
-    global_lights[2].type = FOCO_OBJETO;
-    global_lights[2].is_on = 0;
+        //put_light(2);
+        m_foco(2);
+    }else{
+        global_lights[2].is_on = 0;
+    }
+    /*global_lights[2].type = FOCO_OBJETO;
+    global_lights[2].is_on = 0;*/
 }
 
 void anadir_luz(){
-    GLint luzz, pos, values;
+    GLint luzz, values;
     objetos_luz new;
 
     if(_selected_light>=0 && _selected_light<=3){
@@ -335,12 +343,10 @@ void anadir_luz(){
 
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    put_light(pos-1);
     glGetFloatv(GL_MODELVIEW_MATRIX, new.m_obj);
-    new.is_on = 0;
-    global_lights[pos-1] = new;
-
-    printf("Una vez creada, pulse F%d para activarla.\n", pos);
+    new.is_on = 1;
+    global_lights[_selected_light] = new;
+    //put_light(_selected_light);
 
 }
 

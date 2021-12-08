@@ -62,14 +62,11 @@ int main(int argc, char** argv) {
     /*Definition of the method to draw the objects*/
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
-    inicializar_luces();
-    inicializar_materiales();
-
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
-    glEnable(GL_NORMALIZE);
+    //glEnable(GL_NORMALIZE);
     //if(shade == SMOOTH){
     glShadeModel(GL_SMOOTH);
     /*}else if(shade == FLAT){
@@ -80,6 +77,9 @@ int main(int argc, char** argv) {
     initialization();
     set_transformaciones();
     default_cameras();
+
+    inicializar_luces();
+    inicializar_materiales();
 
 
     /* start the main loop */
