@@ -181,7 +181,20 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->bottom += 0.01;
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(up_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(up_rotacion);
+                            break;
+                    }
                 }
                 break;
             case GLUT_KEY_DOWN:
@@ -214,7 +227,20 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->bottom -= 0.01;
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(down_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(down_rotacion);
+                            break;
+                    }
                 }
                 break;
             case GLUT_KEY_LEFT:
@@ -247,7 +273,20 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->right -= 0.01;
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(left_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(left_rotacion);
+                            break;
+                    }
                 }
                 break;
             case GLUT_KEY_RIGHT:
@@ -280,7 +319,20 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->right += 0.01;
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(right_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(right_rotacion);
+                            break;
+                    }
                 }
                 break;
             case GLUT_KEY_PAGE_UP:
@@ -322,7 +374,20 @@ void esp_keyboard(int key, int x, int y){
 
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(repag_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(repag_rotacion);
+                            break;
+                    }
                 }
                 break;
             case GLUT_KEY_PAGE_DOWN:
@@ -363,7 +428,20 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->far += 0.01;
                     }
                 }else if (elemento == ILUMINACION){
+                    switch (modo){
 
+                        case TRASLACION:
+                            if (global_lights[_selected_light].type == BOMBILLA ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(repag_traslacion);
+                            break;
+
+                        case ROTACION:
+                            if (global_lights[_selected_light].type == SOL ||
+                                global_lights[_selected_light].type == FOCO)
+                                aplicar_transformaciones(repag_rotacion);
+                            break;
+                    }
                 }
                 break;
 
@@ -506,8 +584,10 @@ void esp_keyboard(int key, int x, int y){
             case GLUT_KEY_F9:
                 if(luz == DESACTIVADA){
                     luz = ACTIVADA;
+                    glEnable(GL_LIGHTING);
                 }else{
                     luz = DESACTIVADA;
+                    glDisable(GL_LIGHTING);
                 }
                 break;
 
