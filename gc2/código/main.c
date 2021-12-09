@@ -23,7 +23,7 @@ int _selected_light = 0;
 int luz = ACTIVADA;
 
 
-material_light *ruby, *obsidian, *gold, *mat_camara;
+material_light *ruby, *obsidian, *gold, *mat_camara, *mat_selec;
 
 int modo = TRASLACION;
 int sis_referencia = LOCALES;
@@ -80,7 +80,6 @@ int main(int argc, char** argv) {
 
     inicializar_luces();
     inicializar_materiales();
-
 
     /* start the main loop */
     glutMainLoop();

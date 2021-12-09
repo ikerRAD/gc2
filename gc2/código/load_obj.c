@@ -130,40 +130,6 @@ void normal_vectors(object3d *obj){
         obj->vertex_table[v].normal.z /= norma;
     }
 
-    selected_box box;
-
-    vector3 vn1, vn2, vn3, vn4, vn5, vn6;
-    point3 pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8;
-    pt1 = (point3){.x = obj->max.x, .y = obj->max.y, .z = obj->max.z};
-    pt2 = (point3){.x = obj->min.x, .y = obj->max.y, .z = obj->max.z};
-    pt3 = (point3){.x = obj->min.x, .y = obj->min.y, .z = obj->max.z};
-    pt4 = (point3){.x = obj->max.x, .y = obj->min.y, .z = obj->max.z};
-    pt5 = (point3){.x = obj->max.x, .y = obj->max.y, .z = obj->min.z};
-    pt6 = (point3){.x = obj->min.x, .y = obj->max.y, .z = obj->min.z};
-    pt7 = (point3){.x = obj->min.x, .y = obj->min.y, .z = obj->min.z};
-    pt8 = (point3){.x = obj->max.x, .y = obj->min.y, .z = obj->min.z};
-
-    vn1 = calculate_surface_normal_2(pt5, pt6, pt2);
-    vn2 = calculate_surface_normal_2(pt1, pt2, pt3);
-    vn3 = calculate_surface_normal_2(pt5, pt1, pt4);
-    vn4 = calculate_surface_normal_2(pt3, pt7, pt8);
-    vn5 = calculate_surface_normal_2(pt6, pt7, pt3);
-    vn6 = calculate_surface_normal_2(pt8, pt7, pt6);
-
-    box.aristas[0] = (arista){.pt1 = pt2, .pt2 = pt6, .vn1 = vn1, .vn2 = vn5};
-    box.aristas[1] = (arista){.pt1 = pt2, .pt2 = pt1, .vn1 = vn1, .vn2 = vn2};
-    box.aristas[2] = (arista){.pt1 = pt6, .pt2 = pt5, .vn1 = vn1, .vn2 = vn6};
-    box.aristas[3] = (arista){.pt1 = pt1, .pt2 = pt5, .vn1 = vn1, .vn2 = vn3};
-    box.aristas[4] = (arista){.pt1 = pt2, .pt2 = pt3, .vn1 = vn2, .vn2 = vn5};
-    box.aristas[5] = (arista){.pt1 = pt6, .pt2 = pt7, .vn1 = vn5, .vn2 = vn6};
-    box.aristas[6] = (arista){.pt1 = pt5, .pt2 = pt8, .vn1 = vn6, .vn2 = vn3};
-    box.aristas[7] = (arista){.pt1 = pt1, .pt2 = pt4, .vn1 = vn2, .vn2 = vn3};
-    box.aristas[8] = (arista){.pt1 = pt3, .pt2 = pt4, .vn1 = vn4, .vn2 = vn2};
-    box.aristas[9] = (arista){.pt1 = pt3, .pt2 = pt7, .vn1 = vn4, .vn2 = vn5};
-    box.aristas[10] = (arista){.pt1 = pt7, .pt2 = pt8, .vn1 = vn4, .vn2 = vn6};
-    box.aristas[11] = (arista){.pt1 = pt8, .pt2 = pt4, .vn1 = vn4, .vn2 = vn3};
-
-    obj->box = box;
 
 }
 

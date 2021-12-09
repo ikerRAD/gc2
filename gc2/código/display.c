@@ -5,6 +5,7 @@
 #include <math.h>
 #include "camara.h"
 #include <stdio.h>
+#include "iluminacion.h"
 
 /** EXTERNAL VARIABLES **/
 
@@ -14,6 +15,9 @@ extern object3d *_selected_object;
 extern camera  * _first_camera;
 extern camera * _selected_camera;
 extern camera * _object_camera;
+extern material_light *mat_camara, *mat_selec;
+
+extern objetos_luz global_lights[8];
 
 extern int elemento;
 extern int shade;
@@ -123,7 +127,7 @@ void display(void) {
     }
 
     /* Clear the screen */
-    glClear(GL_COLOR_BUFFER_BIT | GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     /* Define the projection */
     glMatrixMode(GL_PROJECTION);
@@ -174,7 +178,6 @@ void display(void) {
             glPopMatrix();
         }
     }
-
     /*Now each of the objects in the list*/
     while (aux_obj != 0) {
         /*Si estamos proyectando lo que ve el objeto, no enseñamos el objeto*/
@@ -182,10 +185,17 @@ void display(void) {
             /* Select the color, depending on whether the current object is the selected one or not */
 
             if(luz == ACTIVADA) {
-                glMaterialfv(GL_FRONT, GL_AMBIENT, aux_obj->material_light->m_ambient);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_obj->material_light->m_diffuse);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, aux_obj->material_light->m_specular);
-                glMaterialfv(GL_FRONT, GL_SHININESS, aux_obj->material_light->no_shininess);
+                if (aux_obj == _selected_object) {
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, aux_obj->material_light->m_ambient);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_obj->material_light->m_diffuse);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, aux_obj->material_light->m_specular);
+                    glMaterialfv(GL_FRONT, GL_SHININESS, aux_obj->material_light->no_shininess);
+                }else {
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, mat_selec->m_ambient);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_selec->m_diffuse);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, mat_selec->m_specular);
+                    glMaterialfv(GL_FRONT, GL_SHININESS, mat_selec->no_shininess);
+                }
             }else {
                 if (aux_obj == _selected_object) {
                     glColor3f(KG_COL_SELECTED_R, KG_COL_SELECTED_G, KG_COL_SELECTED_B);
@@ -239,34 +249,8 @@ void display(void) {
 
             }
 
-            //dibujar solo las líneas que se ven de la caja de seleccionado
-            if (luz == ACTIVADA){
-                if (aux_obj == _selected_object) {
-                    glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
-                    glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
-                    glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
-                    glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
-                    for (int l = 0; l < 12; l++) {
-                        if (producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn1,
-                                             aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ||
-                            producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn2,
-                                             aux_obj->matrix_table->matriz, cam2->minv) > 0.0) {
-                            glBegin(GL_LINES);
 
-                            glVertex3d(aux_obj->box.aristas[l].pt1.x,
-                                       aux_obj->box.aristas[l].pt1.y,
-                                       aux_obj->box.aristas[l].pt1.z);
 
-                            glVertex3d(aux_obj->box.aristas[l].pt2.x,
-                                       aux_obj->box.aristas[l].pt2.y,
-                                       aux_obj->box.aristas[l].pt2.z);
-
-                            glEnd();
-                        }
-                    }
-
-                }
-            }
 
             /*glColor3f(0, 1, 1);
             for (f = 0; f < aux_obj->num_faces; f++) {

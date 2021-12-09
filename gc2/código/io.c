@@ -49,7 +49,7 @@ extern vector3 *menos_escalado;
 
 extern vector3 *mas_escalado;
 
-extern objetos_luz global_lights[];
+extern objetos_luz global_lights[8];
 extern int _selected_light;
 extern int luz;
 
@@ -667,7 +667,6 @@ void keyboard(unsigned char key, int x, int y) {
                     }else if (elemento == OBJETOCAMARA){
                         add_camera_mode_obj(_selected_object);
                     }
-
                     anadir_material();
                     _selected_object->shade = FLAT;
                     foco_obj();

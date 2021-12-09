@@ -5,7 +5,7 @@
 #include <math.h>
 //git
 extern object3d *_selected_object;
-extern material_light *ruby, *obsidian ,*gold, *mat_camara;
+extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec;
 extern int _selected_light;
 extern camera * _selected_camera;
 extern objetos_luz global_lights[8];
@@ -98,10 +98,56 @@ void put_light(GLint i){
     }
 }
 
+void m_foco(int f){
+    int i;
+    for (i = 0; i < 16; i++){
+        if(f==2) {
+            global_lights[f].m_obj[i] = _selected_object->matrix_table->matriz[i];
+        }else if(f==3){
+            global_lights[f].m_obj[i] = _selected_camera->minv[i];
+        }
+    }
+}
+
+void foco_camara(){
+    global_lights[3].position[0] = (_selected_camera->max.x + _selected_camera->min.x) / 2;
+    global_lights[3].position[1] = (_selected_camera->max.y + _selected_camera->min.y) / 2;
+    global_lights[3].position[2] = (_selected_camera->max.z + _selected_camera->min.z) / 2;
+    global_lights[3].position[3] = 1.0f;
+
+    global_lights[3].ambient[0] = 1.5f;
+    global_lights[3].ambient[1] = 1.5f;
+    global_lights[3].ambient[2] = 1.5f;
+    global_lights[3].ambient[3] = 1.0f;
+
+    global_lights[3].diffuse[0] = 1.5f;
+    global_lights[3].diffuse[1] = 1.5f;
+    global_lights[3].diffuse[2] = 1.5f;
+    global_lights[3].diffuse[3] = 1.0f;
+
+    global_lights[3].specular[0] = 1.0f;
+    global_lights[3].specular[1] = 1.0f;
+    global_lights[3].specular[2] = 1.0f;
+    global_lights[3].specular[3] = 1.0f;
+
+    global_lights[3].cut_off = 45.0f;
+
+    global_lights[3].spot_direction[0] = 0.0f;
+    global_lights[3].spot_direction[1] = 0.0f;
+    global_lights[3].spot_direction[2] = 1.0f;
+
+    //operaciones
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    put_light(3);
+    m_foco(3);
+
+}
+
 void inicializar_luces(){
     //objetos_luz bombilla, sol, foco;
 
-
+    //global_lights = (objetos_luz *)malloc(sizeof(objetos_luz)*8);
 
     global_lights[0].position[0] = 1.0f;
     global_lights[0].position[1] = 1.0f;
@@ -170,52 +216,6 @@ void inicializar_luces(){
 
 }
 
-void foco_camara(){
-    global_lights[3].position[0] = (_selected_camera->max.x + _selected_camera->min.x) / 2;
-    global_lights[3].position[1] = (_selected_camera->max.y + _selected_camera->min.y) / 2;
-    global_lights[3].position[2] = (_selected_camera->max.z + _selected_camera->min.z) / 2;
-    global_lights[3].position[3] = 1.0f;
-
-    global_lights[3].ambient[0] = 1.5f;
-    global_lights[3].ambient[1] = 1.5f;
-    global_lights[3].ambient[2] = 1.5f;
-    global_lights[3].ambient[3] = 1.0f;
-
-    global_lights[3].diffuse[0] = 1.5f;
-    global_lights[3].diffuse[1] = 1.5f;
-    global_lights[3].diffuse[2] = 1.5f;
-    global_lights[3].diffuse[3] = 1.0f;
-
-    global_lights[3].specular[0] = 1.0f;
-    global_lights[3].specular[1] = 1.0f;
-    global_lights[3].specular[2] = 1.0f;
-    global_lights[3].specular[3] = 1.0f;
-
-    global_lights[3].cut_off = 45.0f;
-
-    global_lights[3].spot_direction[0] = 0.0f;
-    global_lights[3].spot_direction[1] = 0.0f;
-    global_lights[3].spot_direction[2] = 1.0f;
-
-    //operaciones
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    put_light(3);
-    m_foco(3);
-
-}
-
-void m_foco(int f){
-    int i;
-    for (i = 0; i < 16; i++){
-        if(f==2) {
-            global_lights[f].m_obj[i] = _selected_object->list_matrix->m[i];
-        }else if(f==3){
-            global_lights[f].m_obj[i] = _selected_camera->minv[i];
-        }
-    }
-}
-
 void foco_obj(){
     if(_selected_object!=0) {
         global_lights[2].position[0] = (_selected_object->max.x + _selected_object->min.x) / 2;
@@ -266,7 +266,7 @@ void anadir_luz(){
     printf("Elige el tipo de luz: 1 SOL, 2 BOMBILLA, 3 FOCO.\n");
     scanf("%d", &luzz);
 
-    while (luz < 1 || luz > 3){
+    while (luzz < 1 || luzz > 3){
         printf("Error, elije entre 1 y 3");
         scanf("%d", &luzz);
     }
@@ -359,6 +359,7 @@ void inicializar_materiales(){
     obsidian = (material_light*)malloc(sizeof(material_light));
     gold = (material_light*)malloc(sizeof(material_light));
     mat_camara = (material_light*)malloc(sizeof(material_light));
+    mat_selec = (material_light*)malloc(sizeof(material_light));
 
     ruby->m_ambient[0] = 0.1745f;
     ruby->m_ambient[1] = 0.01175f;
@@ -416,6 +417,21 @@ void inicializar_materiales(){
     mat_camara->m_specular[2] = 0.633f;
     mat_camara->m_specular[3] = 0.55f ;
     mat_camara->no_shininess[0] = 76.8f;
+
+    //PERL
+    mat_selec->m_ambient[0] =0.25f;
+    mat_selec->m_ambient[1] = 0.20725f;
+    mat_selec->m_ambient[2] = 0.20725f;
+    mat_selec->m_ambient[3] = 0.922f ;
+    mat_selec->m_diffuse[0] = 1.0f;
+    mat_selec->m_diffuse[1] = 0.829f;
+    mat_selec->m_diffuse[2] = 0.829f;
+    mat_selec->m_diffuse[3] = 0.922f ;
+    mat_selec->m_specular[0] = 0.296648f;
+    mat_selec->m_specular[1] = 0.296648f;
+    mat_selec->m_specular[2] = 0.296648f;
+    mat_selec->m_specular[3] =  0.922f ;
+    mat_selec->no_shininess[0] =11.264f;
 }
 
 void anadir_material(){

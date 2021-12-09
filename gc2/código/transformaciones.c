@@ -13,6 +13,9 @@ extern object3d *_selected_object;
 extern camera  * _first_camera;
 extern camera * _selected_camera;
 extern camera * _object_camera;
+extern objetos_luz global_lights[8];
+extern int _selected_light;
+
 
 extern int modo;
 extern int sis_referencia;
