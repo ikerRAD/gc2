@@ -446,138 +446,168 @@ void esp_keyboard(int key, int x, int y){
                 break;
 
             case GLUT_KEY_F1:
-                switch(global_lights[0].is_on){
-                    case 0:
-                        global_lights[0].is_on = 1;
-                        glEnable(GL_LIGHT0);
-                        printf("BOMBILLA encendida\n");
-                        break;
-                    case 1:
-                        global_lights[0].is_on = 0;
-                        glDisable(GL_LIGHT0);
-                        printf("BOMBILLA apagada\n");
-                        break;
+                if(luz==ACTIVADA) {
+                    switch (global_lights[0].is_on) {
+                        case 0:
+                            global_lights[0].is_on = 1;
+                            glEnable(GL_LIGHT0);
+                            printf("BOMBILLA encendida\n");
+                            break;
+                        case 1:
+                            global_lights[0].is_on = 0;
+                            glDisable(GL_LIGHT0);
+                            printf("BOMBILLA apagada\n");
+                            break;
+                    }
                 }
                 break;
 
             case GLUT_KEY_F2:
-                switch(global_lights[1].is_on){
-                    case 0:
-                        global_lights[1].is_on = 1;
-                        glEnable(GL_LIGHT1);
-                        printf("SOL encendido\n");
-                        break;
-                    case 1:
-                        global_lights[1].is_on = 0;
-                        glDisable(GL_LIGHT1);
-                        printf("SOL apagado\n");
-                        break;
+                if(luz==ACTIVADA) {
+                    switch (global_lights[1].is_on) {
+                        case 0:
+                            global_lights[1].is_on = 1;
+                            glEnable(GL_LIGHT1);
+                            printf("SOL encendido\n");
+                            break;
+                        case 1:
+                            global_lights[1].is_on = 0;
+                            glDisable(GL_LIGHT1);
+                            printf("SOL apagado\n");
+                            break;
+                    }
+                }else{
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F3:
-                switch(global_lights[2].is_on){
-                    case 0:
-                        global_lights[2].is_on = 1;
-                        glEnable(GL_LIGHT2);
-                        printf("FOCO-OBJETO encendido\n");
-                        break;
-                    case 1:
-                        global_lights[2].is_on = 0;
-                        glDisable(GL_LIGHT2);
-                        printf("FOCO-OBJETO apagado\n");
-                        break;
+                if(luz == ACTIVADA) {
+                    switch (global_lights[2].is_on) {
+                        case 0:
+                            global_lights[2].is_on = 1;
+                            glEnable(GL_LIGHT2);
+                            printf("FOCO-OBJETO encendido\n");
+                            break;
+                        case 1:
+                            global_lights[2].is_on = 0;
+                            glDisable(GL_LIGHT2);
+                            printf("FOCO-OBJETO apagado\n");
+                            break;
+                    }
+                }else{
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F4:
-                switch(global_lights[3].is_on){
-                    case 0:
-                        global_lights[3].is_on = 1;
-                        glEnable(GL_LIGHT3);
-                        printf("FOCO-CÁMARA encendido\n");
-                        break;
-                    case 1:
-                        global_lights[3].is_on = 0;
-                        glDisable(GL_LIGHT3);
-                        printf("FOCO-CÁMARA apagado\n");
-                        break;
+                if(luz==ACTIVADA) {
+                    switch (global_lights[3].is_on) {
+                        case 0:
+                            global_lights[3].is_on = 1;
+                            glEnable(GL_LIGHT3);
+                            printf("FOCO-CÁMARA encendido\n");
+                            break;
+                        case 1:
+                            global_lights[3].is_on = 0;
+                            glDisable(GL_LIGHT3);
+                            printf("FOCO-CÁMARA apagado\n");
+                            break;
+                    }
+                }else{
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F5:
-                if(global_lights[4].type != NONE) {
-                    switch (global_lights[4].is_on) {
-                        case 0:
-                            global_lights[4].is_on = 1;
-                            glEnable(GL_LIGHT4);
-                            printf("luz 5 encendida\n");
-                            break;
-                        case 1:
-                            global_lights[4].is_on = 0;
-                            glDisable(GL_LIGHT4);
-                            printf("luz 5 apagada\n");
-                            break;
+                if(luz==ACTIVADA) {
+                    if (global_lights[4].type != NONE) {
+                        switch (global_lights[4].is_on) {
+                            case 0:
+                                global_lights[4].is_on = 1;
+                                glEnable(GL_LIGHT4);
+                                printf("luz 5 encendida\n");
+                                break;
+                            case 1:
+                                global_lights[4].is_on = 0;
+                                glDisable(GL_LIGHT4);
+                                printf("luz 5 apagada\n");
+                                break;
+                        }
+                    } else {
+                        printf("primero incializa la luz 5\n");
                     }
                 }else{
-                    printf("primero incializa la luz 5\n");
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F6:
-                if(global_lights[5].type != NONE) {
-                    switch (global_lights[5].is_on) {
-                        case 0:
-                            global_lights[5].is_on = 1;
-                            glEnable(GL_LIGHT5);
-                            printf("luz 6 encendida\n");
-                            break;
-                        case 1:
-                            global_lights[5].is_on = 0;
-                            glDisable(GL_LIGHT5);
-                            printf("luz 6 apagada\n");
-                            break;
+                if(luz == ACTIVADA) {
+                    if (global_lights[5].type != NONE) {
+                        switch (global_lights[5].is_on) {
+                            case 0:
+                                global_lights[5].is_on = 1;
+                                glEnable(GL_LIGHT5);
+                                printf("luz 6 encendida\n");
+                                break;
+                            case 1:
+                                global_lights[5].is_on = 0;
+                                glDisable(GL_LIGHT5);
+                                printf("luz 6 apagada\n");
+                                break;
+                        }
+                    } else {
+                        printf("primero incializa la luz 6\n");
                     }
                 }else{
-                    printf("primero incializa la luz 6\n");
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F7:
-                if(global_lights[6].type != NONE) {
-                    switch (global_lights[6].is_on) {
-                        case 0:
-                            global_lights[6].is_on = 1;
-                            glEnable(GL_LIGHT6);
-                            printf("luz 7 encendida\n");
-                            break;
-                        case 1:
-                            global_lights[6].is_on = 0;
-                            glDisable(GL_LIGHT6);
-                            printf("luz 7 apagada\n");
-                            break;
+                if(luz == ACTIVADA) {
+                    if (global_lights[6].type != NONE) {
+                        switch (global_lights[6].is_on) {
+                            case 0:
+                                global_lights[6].is_on = 1;
+                                glEnable(GL_LIGHT6);
+                                printf("luz 7 encendida\n");
+                                break;
+                            case 1:
+                                global_lights[6].is_on = 0;
+                                glDisable(GL_LIGHT6);
+                                printf("luz 7 apagada\n");
+                                break;
+                        }
+                    } else {
+                        printf("primero incializa la luz 7\n");
                     }
                 }else{
-                    printf("primero incializa la luz 7\n");
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
             case GLUT_KEY_F8:
-                if(global_lights[7].type != NONE) {
-                    switch (global_lights[7].is_on) {
-                        case 0:
-                            global_lights[7].is_on = 1;
-                            glEnable(GL_LIGHT7);
-                            printf("luz 8 encendida\n");
-                            break;
-                        case 1:
-                            global_lights[7].is_on = 0;
-                            glDisable(GL_LIGHT7);
-                            printf("luz 8 apagada\n");
-                            break;
+                if(luz == ACTIVADA) {
+                    if (global_lights[7].type != NONE) {
+                        switch (global_lights[7].is_on) {
+                            case 0:
+                                global_lights[7].is_on = 1;
+                                glEnable(GL_LIGHT7);
+                                printf("luz 8 encendida\n");
+                                break;
+                            case 1:
+                                global_lights[7].is_on = 0;
+                                glDisable(GL_LIGHT7);
+                                printf("luz 8 apagada\n");
+                                break;
+                        }
+                    } else {
+                        printf("primero incializa la luz 8\n");
                     }
                 }else{
-                    printf("primero incializa la luz 8\n");
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
@@ -585,14 +615,22 @@ void esp_keyboard(int key, int x, int y){
                 if(luz == DESACTIVADA){
                     luz = ACTIVADA;
                     glEnable(GL_LIGHTING);
+                    printf("Iluminación activada\n");
                 }else{
                     luz = DESACTIVADA;
                     glDisable(GL_LIGHTING);
+                    printf("Iluminación desactivada\n");
+                    if(elemento == ILUMINACION){
+                        elemento = OBJETO;
+                        printf("Elemento cambiado a objeto debido a que la iluminación ha sido desactivada\n");
+                    }
                 }
                 break;
 
             case GLUT_KEY_F12:
-                _selected_object->shade = (_selected_object->shade + 1)%2;
+                if(luz == ACTIVADA) {
+                    _selected_object->shade = (_selected_object->shade + 1) % 2;
+                }
                 break;
 
         }
@@ -887,13 +925,15 @@ void keyboard(unsigned char key, int x, int y) {
 
     case 'a':
     case 'A':
-        if(elemento!=ILUMINACION) {
+        if(elemento!=ILUMINACION && luz == ACTIVADA) {
             printf("Elemento cambiado a iluminación\n");
             elemento=ILUMINACION;
             if(modo == ESCALADO){
                 modo = TRASLACION;
                 printf("El escalado no existe en la iluminación. Modo cambiado a traslación\n");
             }
+        }else if(luz == DESACTIVADA){
+            printf("Activa la iluminación primero!\n");
         }
         break;
 
@@ -977,63 +1017,65 @@ void keyboard(unsigned char key, int x, int y) {
         break;
 
     case '1':
-        if(_selected_light != 0) {
+        if(_selected_light != 0 && luz == ACTIVADA) {
             _selected_light = 0;
             printf("BOMBILLA seleccionada.\n");
         }
         break;
 
     case '2':
-        if(_selected_light != 1) {
+        if(_selected_light != 1 && luz == ACTIVADA) {
             _selected_light = 1;
             printf("SOL seleccionada.\n");
         }
         break;
 
     case '3':
-        if(_selected_light != 2) {
+        if(_selected_light != 2 && luz == ACTIVADA) {
             _selected_light = 2;
             printf("FOCO-OBJETO seleccionado.\n");
         }
         break;
 
     case '4':
-        if(_selected_light != 3) {
+        if(_selected_light != 3 && luz == ACTIVADA) {
             _selected_light = 3;
             printf("FOCO-CÁMARA seleccionado.\n");
         }
         break;
 
     case '5':
-        if(_selected_light != 4) {
+        if(_selected_light != 4 && luz == ACTIVADA) {
             _selected_light = 4;
             printf("Seleccionada LUZ 5.\n");
         }
         break;
 
     case '6':
-        if(_selected_light != 5) {
+        if(_selected_light != 5 && luz == ACTIVADA) {
             _selected_light = 5;
             printf("Seleccionada LUZ 6.\n");
         }
         break;
 
     case '7':
-        if(_selected_light != 6) {
+        if(_selected_light != 6 && luz == ACTIVADA) {
             _selected_light = 6;
             printf("Seleccionada LUZ 7.\n");
         }
         break;
 
     case '8':
-        if(_selected_light != 7) {
+        if(_selected_light != 7 && luz == ACTIVADA) {
             _selected_light = 7;
             printf("Seleccionada LUZ 8.\n");
         }
         break;
     case 'm':
     case 'M':
-        cambiar_material();
+        if(luz == ACTIVADA) {
+            cambiar_material();
+        }
         break;
 
     default:

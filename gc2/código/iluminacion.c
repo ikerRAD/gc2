@@ -132,9 +132,15 @@ void foco_camara(){
 
     global_lights[3].cut_off = 45.0f;
 
-    global_lights[3].spot_direction[0] = 0.0f;
-    global_lights[3].spot_direction[1] = 0.0f;
-    global_lights[3].spot_direction[2] = 1.0f;
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(_selected_camera->minv);
+    glTranslatef(0, 0, -5);
+    GLfloat pos[16];
+    glGetFloatv(GL_MODELVIEW_MATRIX, pos);
+
+    global_lights[3].spot_direction[0] = pos[12];
+    global_lights[3].spot_direction[1] = pos[13];
+    global_lights[3].spot_direction[2] = pos[14];
 
     //operaciones
     glMatrixMode(GL_MODELVIEW);

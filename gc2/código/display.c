@@ -224,7 +224,7 @@ void display(void) {
 
                     glBegin(GL_POLYGON);
 
-                    if (aux_obj->shade == FLAT) {
+                    if (aux_obj->shade == FLAT && luz == ACTIVADA) {
                         glNormal3d(aux_obj->face_table[f].normal.x,
                                    aux_obj->face_table[f].normal.y,
                                    aux_obj->face_table[f].normal.z);
@@ -233,7 +233,7 @@ void display(void) {
                     for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
                         v_index = aux_obj->face_table[f].vertex_table[v];
 
-                        if (aux_obj->shade == SMOOTH) {
+                        if (aux_obj->shade == SMOOTH && luz == ACTIVADA) {
                             glNormal3d(aux_obj->vertex_table[v_index].normal.x,
                                        aux_obj->vertex_table[v_index].normal.y,
                                        aux_obj->vertex_table[v_index].normal.z);
@@ -303,11 +303,11 @@ void display(void) {
                 if(producto_escalar(aux_cam->vertex_table[v_aux].coord, aux_cam->face_table[f].normal, aux_cam->minv, cam2->minv) > 0.0) {
                     glBegin(GL_POLYGON);
 
-                    //if(shade == FLAT) {
+                    if(luz == ACTIVADA) {
                     glNormal3d(aux_cam->face_table[f].normal.x,
                                aux_cam->face_table[f].normal.y,
                                aux_cam->face_table[f].normal.z);
-                    //}
+                    }
 
                     for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
                         v_index = aux_cam->face_table[f].vertex_table[v];
