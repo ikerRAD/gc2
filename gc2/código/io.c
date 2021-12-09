@@ -18,6 +18,7 @@ extern int modo;
 extern int sis_referencia;
 extern int elemento;
 extern int modo_camara;
+extern int luz;
 
 
 extern vector3 *up_traslacion;
@@ -72,6 +73,7 @@ void print_help(){
     printf("<k>\t\t Cambiar de cámara.\n");
     printf("<n>\t\t Añadir nueva cámara.\n");
     printf("<P,p>\t\t Cambio de tipo de proyección: perspectiva (por defecto)/ paralela.\n");
+    printf("<M,m>\t\t Cambio de material del objeto.\n");
     printf("\n\n");
     printf("FUNCIONES DE ILUMINACIÓN \n");
     printf("<f9>\t\t Activar/Desactivar iluminación. \n");
@@ -178,6 +180,8 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->top -= 0.01;
                         _selected_camera->proj->bottom += 0.01;
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
             case GLUT_KEY_DOWN:
@@ -209,6 +213,8 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->top += 0.01;
                         _selected_camera->proj->bottom -= 0.01;
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
             case GLUT_KEY_LEFT:
@@ -240,6 +246,8 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->left += 0.01;
                         _selected_camera->proj->right -= 0.01;
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
             case GLUT_KEY_RIGHT:
@@ -271,6 +279,8 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->left -= 0.01;
                         _selected_camera->proj->right += 0.01;
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
             case GLUT_KEY_PAGE_UP:
@@ -311,6 +321,8 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->far -= 0.01;
 
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
             case GLUT_KEY_PAGE_DOWN:
@@ -350,43 +362,169 @@ void esp_keyboard(int key, int x, int y){
                         _selected_camera->proj->near += 0.01;
                         _selected_camera->proj->far += 0.01;
                     }
+                }else if (elemento == ILUMINACION){
+
                 }
                 break;
-            //TODO
+
             case GLUT_KEY_F1:
+                switch(global_lights[0].is_on){
+                    case 0:
+                        global_lights[0].is_on = 1;
+                        glEnable(GL_LIGHT0);
+                        printf("BOMBILLA encendida\n");
+                        break;
+                    case 1:
+                        global_lights[0].is_on = 0;
+                        glDisable(GL_LIGHT0);
+                        printf("BOMBILLA apagada\n");
+                        break;
+                }
                 break;
 
             case GLUT_KEY_F2:
+                switch(global_lights[1].is_on){
+                    case 0:
+                        global_lights[1].is_on = 1;
+                        glEnable(GL_LIGHT1);
+                        printf("SOL encendido\n");
+                        break;
+                    case 1:
+                        global_lights[1].is_on = 0;
+                        glDisable(GL_LIGHT1);
+                        printf("SOL apagado\n");
+                        break;
+                }
                 break;
 
             case GLUT_KEY_F3:
+                switch(global_lights[2].is_on){
+                    case 0:
+                        global_lights[2].is_on = 1;
+                        glEnable(GL_LIGHT2);
+                        printf("FOCO-OBJETO encendido\n");
+                        break;
+                    case 1:
+                        global_lights[2].is_on = 0;
+                        glDisable(GL_LIGHT2);
+                        printf("FOCO-OBJETO apagado\n");
+                        break;
+                }
                 break;
 
             case GLUT_KEY_F4:
+                switch(global_lights[3].is_on){
+                    case 0:
+                        global_lights[3].is_on = 1;
+                        glEnable(GL_LIGHT3);
+                        printf("FOCO-CÁMARA encendido\n");
+                        break;
+                    case 1:
+                        global_lights[3].is_on = 0;
+                        glDisable(GL_LIGHT3);
+                        printf("FOCO-CÁMARA apagado\n");
+                        break;
+                }
                 break;
 
             case GLUT_KEY_F5:
+                if(global_lights[4].type != NONE) {
+                    switch (global_lights[4].is_on) {
+                        case 0:
+                            global_lights[4].is_on = 1;
+                            glEnable(GL_LIGHT4);
+                            printf("luz 5 encendida\n");
+                            break;
+                        case 1:
+                            global_lights[4].is_on = 0;
+                            glDisable(GL_LIGHT4);
+                            printf("luz 5 apagada\n");
+                            break;
+                    }
+                }else{
+                    printf("primero incializa la luz 5\n");
+                }
                 break;
 
             case GLUT_KEY_F6:
+                if(global_lights[5].type != NONE) {
+                    switch (global_lights[5].is_on) {
+                        case 0:
+                            global_lights[5].is_on = 1;
+                            glEnable(GL_LIGHT5);
+                            printf("luz 6 encendida\n");
+                            break;
+                        case 1:
+                            global_lights[5].is_on = 0;
+                            glDisable(GL_LIGHT5);
+                            printf("luz 6 apagada\n");
+                            break;
+                    }
+                }else{
+                    printf("primero incializa la luz 6\n");
+                }
                 break;
 
             case GLUT_KEY_F7:
+                if(global_lights[6].type != NONE) {
+                    switch (global_lights[6].is_on) {
+                        case 0:
+                            global_lights[6].is_on = 1;
+                            glEnable(GL_LIGHT6);
+                            printf("luz 7 encendida\n");
+                            break;
+                        case 1:
+                            global_lights[6].is_on = 0;
+                            glDisable(GL_LIGHT6);
+                            printf("luz 7 apagada\n");
+                            break;
+                    }
+                }else{
+                    printf("primero incializa la luz 7\n");
+                }
                 break;
 
             case GLUT_KEY_F8:
+                if(global_lights[7].type != NONE) {
+                    switch (global_lights[7].is_on) {
+                        case 0:
+                            global_lights[7].is_on = 1;
+                            glEnable(GL_LIGHT7);
+                            printf("luz 8 encendida\n");
+                            break;
+                        case 1:
+                            global_lights[7].is_on = 0;
+                            glDisable(GL_LIGHT7);
+                            printf("luz 8 apagada\n");
+                            break;
+                    }
+                }else{
+                    printf("primero incializa la luz 8\n");
+                }
                 break;
 
             case GLUT_KEY_F9:
+                if(luz == DESACTIVADA){
+                    luz = ACTIVADA;
+                }else{
+                    luz = DESACTIVADA;
+                }
                 break;
 
             case GLUT_KEY_F12:
+                _selected_object->shade = (_selected_object->shade + 1)%2;
                 break;
 
         }
         /*Si el objeto es la cámara*/
         if(elemento == OBJETOCAMARA){
             add_camera_mode_obj(_selected_object);
+            m_foco(2);
+            m_foco(3);
+        }else if(elemento == CAMARA){
+            m_foco(3);
+        }else if(elemento == OBJETO){
+            m_foco(2);
         }
 
     }
@@ -813,6 +951,10 @@ void keyboard(unsigned char key, int x, int y) {
             _selected_light = 7;
             printf("Seleccionada LUZ 8.\n");
         }
+        break;
+    case 'm':
+    case 'M':
+        cambiar_material();
         break;
 
     default:

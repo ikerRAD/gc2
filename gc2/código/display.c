@@ -17,6 +17,7 @@ extern camera * _object_camera;
 
 extern int elemento;
 extern int shade;
+extern int luz;
 
 void matriz_csr(GLfloat *mcsr, GLfloat *m);
 
@@ -179,30 +180,41 @@ void display(void) {
         /*Si estamos proyectando lo que ve el objeto, no enseñamos el objeto*/
         if(elemento != OBJETOCAMARA || aux_obj != _selected_object) {
             /* Select the color, depending on whether the current object is the selected one or not */
-            /*if (aux_obj == _selected_object) {
-                glColor3f(KG_COL_SELECTED_R, KG_COL_SELECTED_G, KG_COL_SELECTED_B);
-            } else {
-                glColor3f(KG_COL_NONSELECTED_R, KG_COL_NONSELECTED_G, KG_COL_NONSELECTED_B);
-            }*/
 
-            glMaterialfv(GL_FRONT, GL_AMBIENT, aux_obj->material_light->m_ambient);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_obj->material_light->m_diffuse);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, aux_obj->material_light->m_specular);
-            glMaterialfv(GL_FRONT, GL_SHININESS, aux_obj->material_light->no_shininess);
+            if(luz == ACTIVADA) {
+                glMaterialfv(GL_FRONT, GL_AMBIENT, aux_obj->material_light->m_ambient);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_obj->material_light->m_diffuse);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, aux_obj->material_light->m_specular);
+                glMaterialfv(GL_FRONT, GL_SHININESS, aux_obj->material_light->no_shininess);
+            }else {
+                if (aux_obj == _selected_object) {
+                    glColor3f(KG_COL_SELECTED_R, KG_COL_SELECTED_G, KG_COL_SELECTED_B);
+                } else {
+                    glColor3f(KG_COL_NONSELECTED_R, KG_COL_NONSELECTED_G, KG_COL_NONSELECTED_B);
 
+                }
+            }
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
             glPushMatrix();
 
             glMultMatrixf(aux_obj->matrix_table->matriz);
+
+            if(aux_obj->shade == FLAT){
+                glShadeModel(GL_FLAT);
+            }else{
+                glShadeModel(GL_SMOOTH);
+            }
+
             for (f = 0; f < aux_obj->num_faces; f++) {
 
                 v_aux = aux_obj->face_table[f].vertex_table[0];
 
-                if(producto_escalar(aux_obj->vertex_table[v_aux].coord, aux_obj->face_table[f].normal, aux_obj->matrix_table->matriz, cam2->minv) > 0.0){
+                if (producto_escalar(aux_obj->vertex_table[v_aux].coord, aux_obj->face_table[f].normal,
+                                     aux_obj->matrix_table->matriz, cam2->minv) > 0.0) {
 
                     glBegin(GL_POLYGON);
 
-                    if(aux_obj->shade == FLAT) {
+                    if (aux_obj->shade == FLAT) {
                         glNormal3d(aux_obj->face_table[f].normal.x,
                                    aux_obj->face_table[f].normal.y,
                                    aux_obj->face_table[f].normal.z);
@@ -211,7 +223,7 @@ void display(void) {
                     for (v = 0; v < aux_obj->face_table[f].num_vertices; v++) {
                         v_index = aux_obj->face_table[f].vertex_table[v];
 
-                        if(aux_obj->shade == SMOOTH) {
+                        if (aux_obj->shade == SMOOTH) {
                             glNormal3d(aux_obj->vertex_table[v_index].normal.x,
                                        aux_obj->vertex_table[v_index].normal.y,
                                        aux_obj->vertex_table[v_index].normal.z);
@@ -228,25 +240,32 @@ void display(void) {
             }
 
             //dibujar solo las líneas que se ven de la caja de seleccionado
-            if(aux_obj == _selected_object){
-                glColor3f(1, 1, 1);
-                for(int l = 0; l<12; l++){
-                    if(producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn1, aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ||
-                       producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn2, aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ){
-                        glBegin(GL_LINES);
+            if (luz == ACTIVADA){
+                if (aux_obj == _selected_object) {
+                    glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
+                    glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
+                    glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
+                    glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
+                    for (int l = 0; l < 12; l++) {
+                        if (producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn1,
+                                             aux_obj->matrix_table->matriz, cam2->minv) > 0.0 ||
+                            producto_escalar(aux_obj->box.aristas[l].pt1, aux_obj->box.aristas[l].vn2,
+                                             aux_obj->matrix_table->matriz, cam2->minv) > 0.0) {
+                            glBegin(GL_LINES);
 
-                        glVertex3d(aux_obj->box.aristas[l].pt1.x,
-                                   aux_obj->box.aristas[l].pt1.y,
-                                   aux_obj->box.aristas[l].pt1.z);
+                            glVertex3d(aux_obj->box.aristas[l].pt1.x,
+                                       aux_obj->box.aristas[l].pt1.y,
+                                       aux_obj->box.aristas[l].pt1.z);
 
-                        glVertex3d(aux_obj->box.aristas[l].pt2.x,
-                                   aux_obj->box.aristas[l].pt2.y,
-                                   aux_obj->box.aristas[l].pt2.z);
+                            glVertex3d(aux_obj->box.aristas[l].pt2.x,
+                                       aux_obj->box.aristas[l].pt2.y,
+                                       aux_obj->box.aristas[l].pt2.z);
 
-                        glEnd();
+                            glEnd();
+                        }
                     }
-                }
 
+                }
             }
 
             /*glColor3f(0, 1, 1);
@@ -275,16 +294,18 @@ void display(void) {
 
     /* Select the color*/
     //glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
-
+    glShadeModel(GL_FLAT);
     while (aux_cam != 0) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
         if(elemento == OBJETOCAMARA || aux_cam != _selected_camera) {
-
-            glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
-            glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
-            glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
-
+            if(luz == ACTIVADA) {
+                glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
+                glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
+            }else{
+                glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
+            }
 
             /* Draw the object; for each face create a new polygon with the corresponding vertices */
             //glLoadIdentity();

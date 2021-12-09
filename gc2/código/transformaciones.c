@@ -131,6 +131,8 @@ void transformation_matrix(){
                          -_selected_object->matrix_table->matriz[14]);
         }*/
 
+    }else if(elemento == ILUMINACION){
+        glLoadMatrixf(global_lights[_selected_light].m_obj);
     }
 }
 
@@ -161,6 +163,8 @@ void set_transformation_matrix(){
             glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
             matriz_inversa(_selected_camera);
         }*/
+    }else if(elemento == ILUMINACION){
+        glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[_selected_light].m_obj);
     }
 }
 

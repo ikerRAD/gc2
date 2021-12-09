@@ -82,6 +82,7 @@
 #define ACTIVADA                            1
 #define DESACTIVADA                         0
 
+#define NONE                               -1
 #define SOL                                 0
 #define BOMBILLA                            1
 #define FOCO                                2

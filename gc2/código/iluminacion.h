@@ -15,6 +15,6 @@ void anadir_luz();
 
 void inicializar_materiales();
 
-void anadir_material(object3d *_selected_object);
+void anadir_material();
 
-void cambiar_material(object3d *_selected_object);
+void cambiar_material();

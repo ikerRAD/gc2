@@ -8,6 +8,7 @@ extern object3d *_selected_object;
 extern material_light *ruby, *obsidian ,*gold, *mat_camara;
 extern int _selected_light;
 extern camera * _selected_camera;
+extern objetos_luz global_lights[8];
 
 void put_light(GLint i){
     switch (i){
@@ -123,7 +124,7 @@ void inicializar_luces(){
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //put_light(0);
+    put_light(0);
     glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[0].m_obj);
     global_lights[0].type = BOMBILLA;
     global_lights[0].is_on = 0;
@@ -150,7 +151,7 @@ void inicializar_luces(){
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //put_light(1);
+    put_light(1);
     glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[1].m_obj);
     global_lights[1].type = SOL;
     global_lights[1].is_on = 1;
@@ -160,6 +161,9 @@ void inicializar_luces(){
     global_lights[3].type = FOCO_OBJETO;
     for(int i=2; i<8; i++) {
         global_lights[i].is_on = 0;
+        if(i>3){
+            global_lights[i].type = NONE;
+        }
     }
 
     foco_camara();
@@ -196,7 +200,7 @@ void foco_camara(){
     //operaciones
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    //put_light(3);
+    put_light(3);
     m_foco(3);
 
 }
@@ -240,7 +244,7 @@ void foco_obj(){
         global_lights[2].spot_direction[1] = 0.0f;
         global_lights[2].spot_direction[2] = 1.0f;
 
-        //put_light(2);
+        put_light(2);
         m_foco(2);
     }else{
         global_lights[2].is_on = 0;
@@ -346,7 +350,7 @@ void anadir_luz(){
     glGetFloatv(GL_MODELVIEW_MATRIX, new.m_obj);
     new.is_on = 1;
     global_lights[_selected_light] = new;
-    //put_light(_selected_light);
+    put_light(_selected_light);
 
 }
 
