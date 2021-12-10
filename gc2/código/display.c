@@ -283,10 +283,10 @@ void display(void) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
         if(elemento == OBJETOCAMARA || aux_cam != _selected_camera) {
             if(luz == ACTIVADA) {
-                glMaterialfv(GL_FRONT, GL_AMBIENT, aux_cam->material_light->m_ambient);
-                glMaterialfv(GL_FRONT, GL_DIFFUSE, aux_cam->material_light->m_diffuse);
-                glMaterialfv(GL_FRONT, GL_SPECULAR, aux_cam->material_light->m_specular);
-                glMaterialfv(GL_FRONT, GL_SHININESS, aux_cam->material_light->no_shininess);
+                glMaterialfv(GL_FRONT, GL_AMBIENT, mat_camara->m_ambient);
+                glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_camara->m_diffuse);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, mat_camara->m_specular);
+                glMaterialfv(GL_FRONT, GL_SHININESS, mat_camara->no_shininess);
             }else{
                 glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
             }

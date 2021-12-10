@@ -825,6 +825,7 @@ void keyboard(unsigned char key, int x, int y) {
                      (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
                      && global_lights[_selected_light].is_on == 1){
                 global_lights[_selected_light].cut_off += 5;
+                printf("si\n");
             }
             break;
 

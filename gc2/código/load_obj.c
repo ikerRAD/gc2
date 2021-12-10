@@ -311,6 +311,5 @@ void load_camera_representation(camera *cam){
     cam->num_vertices = auxiliar_object.num_vertices;
     cam->max = auxiliar_object.max;
     cam->min = auxiliar_object.min;
-    cam->material_light = mat_camara;
 
 }
