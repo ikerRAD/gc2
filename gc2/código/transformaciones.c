@@ -125,14 +125,7 @@ void transformation_matrix(){
             glLoadIdentity();
     }else if(elemento == CAMARA){
 
-        //if(modo_camara == VUELO){
         glLoadMatrixf(_selected_camera->minv);
-        /*}else{
-            glLoadIdentity();
-            glTranslatef(-_selected_object->matrix_table->matriz[12],
-                         -_selected_object->matrix_table->matriz[13],
-                         -_selected_object->matrix_table->matriz[14]);
-        }*/
 
     }else if(elemento == ILUMINACION){
         glLoadMatrixf(global_lights[_selected_light].m_obj);
@@ -155,17 +148,9 @@ void set_transformation_matrix(){
         _selected_object->matrix_table = n_ptr;
 
     }else if(elemento == CAMARA){
-        //if(modo_camara == VUELO){
         glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
         matriz_inversa(_selected_camera);
-        /*}else{
-            glTranslatef(_selected_object->matrix_table->matriz[12],
-                         _selected_object->matrix_table->matriz[12],
-                         _selected_object->matrix_table->matriz[12]);
-            glMultMatrixf(_selected_camera->minv);
-            glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
-            matriz_inversa(_selected_camera);
-        }*/
+
     }else if(elemento == ILUMINACION){
         glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[_selected_light].m_obj);
     }

@@ -3,12 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "io.h"
 //git
 extern object3d *_selected_object;
 extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec;
 extern int _selected_light;
 extern camera * _selected_camera;
 extern objetos_luz global_lights[8];
+
 
 void put_light(GLint i){
     switch (i){
@@ -132,28 +134,19 @@ void foco_camara(){
 
     global_lights[3].cut_off = 45.0f;
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(_selected_camera->minv);
-    glTranslatef(0, 0, -5);
-    GLfloat pos[16];
-    glGetFloatv(GL_MODELVIEW_MATRIX, pos);
-
-    global_lights[3].spot_direction[0] = pos[12];
-    global_lights[3].spot_direction[1] = pos[13];
-    global_lights[3].spot_direction[2] = pos[14];
+    global_lights[3].spot_direction[0] = 0;
+    global_lights[3].spot_direction[1] = 0;
+    global_lights[3].spot_direction[2] = -1;
 
     //operaciones
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    put_light(3);
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
+    //put_light(3);
     m_foco(3);
 
 }
 
 void inicializar_luces(){
-    //objetos_luz bombilla, sol, foco;
-
-    //global_lights = (objetos_luz *)malloc(sizeof(objetos_luz)*8);
 
     global_lights[0].position[0] = 1.0f;
     global_lights[0].position[1] = 1.0f;
@@ -171,19 +164,14 @@ void inicializar_luces(){
     global_lights[0].specular[1] = 1.0f;
     global_lights[0].specular[2] = 1.0f;
     global_lights[0].specular[3] = 1.0f;
-    //global_lights[1].is_on = 0;
 
-    //operaciones
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    put_light(0);
-    glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[0].m_obj);
+    identity(global_lights[0].m_obj);
     global_lights[0].type = BOMBILLA;
     global_lights[0].is_on = 0;
 
 
     global_lights[1].position[0] = 0.0f;
-    global_lights[1].position[1] = 1.0f;
+    global_lights[1].position[1] = 5.0f;
     global_lights[1].position[2] = 0.0f;
     global_lights[1].position[3] = 0.0f;
     global_lights[1].ambient[0] = 1.2f;
@@ -198,13 +186,8 @@ void inicializar_luces(){
     global_lights[1].specular[1] = 1.0f;
     global_lights[1].specular[2] = 1.0f;
     global_lights[1].specular[3] = 1.0f;
-    //global_lights[0].is_on = 0;
 
-    //operaciones
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    put_light(1);
-    glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[1].m_obj);
+    identity(global_lights[1].m_obj);
     global_lights[1].type = SOL;
     global_lights[1].is_on = 1;
 
@@ -250,21 +233,18 @@ void foco_obj(){
         global_lights[2].spot_direction[1] = 0.0f;
         global_lights[2].spot_direction[2] = 1.0f;
 
-        put_light(2);
         m_foco(2);
     }else{
         global_lights[2].is_on = 0;
     }
-    /*global_lights[2].type = FOCO_OBJETO;
-    global_lights[2].is_on = 0;*/
 }
 
 void anadir_luz(){
     GLint luzz, values;
-    objetos_luz new;
+
 
     if(_selected_light>=0 && _selected_light<=3){
-        printf("Error, elije una luz entre la 5 y la 8\n");
+        printf("Error, ten seleccionada una luz entre la 5 y la 8\n");
         return;
     }
 
@@ -277,85 +257,60 @@ void anadir_luz(){
         scanf("%d", &luzz);
     }
 
-    printf("Si deseas propiedades por defecto pulsa 0, si deseas insertarlas pulsa otro número.\n");
-    scanf("%d", &values);
+    global_lights[_selected_light].ambient[0] = 1.2f;
+    global_lights[_selected_light].ambient[1] = 1.2f;
+    global_lights[_selected_light].ambient[2] = 1.2f;
+    global_lights[_selected_light].ambient[3] = 1.0f;
 
-    if (values == 0){
-        new.ambient[0] = 1.2f;
-        new.ambient[1] = 1.2f;
-        new.ambient[2] = 1.2f;
-        new.ambient[3] = 1.0f;
+    global_lights[_selected_light].diffuse[0] = 1.0f;
+    global_lights[_selected_light].diffuse[1] = 1.0f;
+    global_lights[_selected_light].diffuse[2] = 1.0f;
+    global_lights[_selected_light].diffuse[3] = 1.0f;
 
-        new.diffuse[0] = 1.0f;
-        new.diffuse[1] = 1.0f;
-        new.diffuse[2] = 1.0f;
-        new.diffuse[3] = 1.0f;
+    global_lights[_selected_light].specular[0] = 1.0f;
+    global_lights[_selected_light].specular[1] = 1.0f;
+    global_lights[_selected_light].specular[2] = 1.0f;
+    global_lights[_selected_light].specular[3] = 1.0f;
 
-        new.specular[0] = 1.0f;
-        new.specular[1] = 1.0f;
-        new.specular[2] = 1.0f;
-        new.specular[3] = 1.0f;
-    } else {
-        printf("Inserta la luz ambiental de la siguiente manera: r g b a\n");
-        scanf("%f %f %f %f", &new.ambient[0], &new.ambient[1], &new.ambient[2], &new.ambient[3]);
+    if(luzz == 1) {
+        global_lights[_selected_light].position[1] = 5.0;
+        global_lights[_selected_light].position[3] = 0.0;
+    }else{
 
-        printf("Inserta la luz difusa de la misma manera que antes: r g b a\n");
-        scanf("%f %f %f %f", &new.diffuse[0], &new.diffuse[1], &new.diffuse[2], &new.diffuse[3]);
-
-        printf("Inserta la luz especular de la misma manera que antes: r g b a\n");
-        scanf("%f %f %f %f", &new.specular[0], &new.specular[1], &new.specular[2], &new.specular[3]);
+        global_lights[_selected_light].position[1] = 0.0;
+        global_lights[_selected_light].position[3] = 1.0;
     }
-
-    if (luzz != 1){
-        printf("Inserta la posicion de la siguiente manera: x y z\n");
-        scanf("%f %f %f", &new.position[0], &new.position[1], &new.position[2]);
-    }
+    global_lights[_selected_light].position[2] = 0.0;
+    global_lights[_selected_light].position[0] = 0.0;
 
     switch (luzz){
         case 1:
-            new.type = SOL;
-            new.position[0] = 0.0f;
-            new.position[1] = 1.0f;
-            new.position[2] = 0.0f;
-            new.position[3] = 0.0f;
+            global_lights[_selected_light].type = SOL;
             break;
 
         case 2:
-            new.type = BOMBILLA;
-            new.position[3] = 1.0f;
+            global_lights[_selected_light].type = BOMBILLA;
             break;
 
         case 3:
-            new.type = FOCO;
-            new.position[3] = 1.0f;
-            printf("Para el foco necesitamos un punto de direccion y un angulo\n");
-            printf("De nuevo, si deseas por defecto pulsa 0, si deseas introducirlo pulsa 1.\n");
-            scanf("%d", &values);
+            global_lights[_selected_light].type = FOCO;
 
-            if (values == 0){
-                new.cut_off == 45.0f;
-                new.spot_direction[0] = 0.0f;
-                new.spot_direction[1] = 0.0f;
-                new.spot_direction[2] = 1.0f;
-            } else {
-                printf("Inserte el punto de la siguiente manera: x y z\n");
-                scanf("%f %f %f", &new.spot_direction[0], &new.spot_direction[1], &new.spot_direction[2]);
+            global_lights[_selected_light].cut_off == 45.0f;
+            global_lights[_selected_light].spot_direction[0] = 0.0f;
+            global_lights[_selected_light].spot_direction[1] = 0.0f;
+            global_lights[_selected_light].spot_direction[2] = 1.0f;
 
-                printf("Inserte el angulo\n");
-                scanf("%f", &new.cut_off);
-            }
             break;
 
-        default:
-            printf("Numero de tipo de luz incorrecto!\n");
-            break;
     }
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glGetFloatv(GL_MODELVIEW_MATRIX, new.m_obj);
-    new.is_on = 1;
-    global_lights[_selected_light] = new;
+    //glMatrixMode(GL_MODELVIEW);
+    //glLoadIdentity();
+    identity(global_lights[_selected_light].m_obj);
+    //glGetFloatv(GL_MODELVIEW_MATRIX, new.m_obj);
+    global_lights[_selected_light].is_on = 1;
+    printf("luz %d encendida\n",_selected_light+1);
+    //global_lights[_selected_light] = new;
     put_light(_selected_light);
 
 }

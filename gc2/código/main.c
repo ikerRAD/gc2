@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     glEnable(GL_LIGHT0);
     //glEnable(GL_NORMALIZE);
     //if(shade == SMOOTH){
-    glShadeModel(GL_SMOOTH);
+    //glShadeModel(GL_SMOOTH);
     /*}else if(shade == FLAT){
         glShadeModel(GL_FLAT);
     }*/

@@ -21,6 +21,7 @@ extern int modo_camara;
 extern int luz;
 
 
+
 extern vector3 *up_traslacion;
 extern vector3 *up_rotacion;
 extern vector3 *up_escalado;
@@ -77,8 +78,8 @@ void print_help(){
     printf("\n\n");
     printf("FUNCIONES DE ILUMINACIÓN \n");
     printf("<f9>\t\t Activar/Desactivar iluminación. \n");
-    printf("<f1-f4>\t\t Encender/Apagar fuente de luz correspondiente del. Bombilla, sol, foco del objeto seleccionado y foco de la cámara. \n");
-    printf("<f5-f8>\t\t Encender/Apagar fuente de luz correspondiente del. \n");
+    printf("<f1-f4>\t\t Encender/Apagar fuente de luz correspondiente. Bombilla, sol, foco del objeto seleccionado y foco de la cámara. \n");
+    printf("<f5-f8>\t\t Encender/Apagar fuente de luz correspondiente. \n");
     printf("<1-8>\t\t Seleccionar la fuente de luz correspondiente. \n");
     printf("<0>\t\t Asignar tipo de fuente de luz a fuente de 5-8 seleccionada. \n");
     printf("<f12>\t\t Cambiar tipo de iluminación del objeto seleccionado. \n");
@@ -347,14 +348,11 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){
                     if (modo == TRASLACION){
                         if (modo_camara == ANALISIS){
-                            if (distancia_camara_objeto() > 1.0){
-                                /*camara = (vector3 *)malloc(sizeof(vector3));
-                                *camara = (vector3){
-                                        .x = -_selected_camera->minv[8],
-                                        .y = -_selected_camera->minv[9],
-                                        .z = -_selected_camera->minv[10]
-                                };*/
+                            GLfloat dist = distancia_camara_objeto();
+                            if (dist > 1.0){
                                 aplicar_transformaciones(repag_traslacion);
+                            }else{//para evitar error de redondeo
+                                centre_camera_to_obj(_selected_object);
                             }
                         } else {
                             aplicar_transformaciones(repag_traslacion);
@@ -402,14 +400,10 @@ void esp_keyboard(int key, int x, int y){
                 }else if(elemento == CAMARA){
                     if (modo == TRASLACION){
                         if (modo_camara == ANALISIS){
-                            if (distancia_camara_objeto() < 1000){
-                                /*camara = (vector3 *)malloc(sizeof(vector3));
-                                *camara = (vector3){
-                                        .x = _selected_camera->minv[8],
-                                        .y = _selected_camera->minv[9],
-                                        .z = _selected_camera->minv[10]
-                                };*/
+                            if (distancia_camara_objeto() < 100){//no permitimos que se aleje en exceso
                                 aplicar_transformaciones(avpag_traslacion);
+                            }else{//para evitar error de redondeo
+                                centre_camera_to_obj(_selected_object);
                             }
                         } else {
                             aplicar_transformaciones(avpag_traslacion);
@@ -459,6 +453,8 @@ void esp_keyboard(int key, int x, int y){
                             printf("BOMBILLA apagada\n");
                             break;
                     }
+                }else{
+                    printf("primero activa la iluminación\n");
                 }
                 break;
 
@@ -664,7 +660,6 @@ void keyboard(unsigned char key, int x, int y) {
     GLdouble wd,he,midx,midy;
 
     matrices *auxiliar_matrix;
-    camera *auxiliar_camera = 0;
 
     switch (key) {
         case 'f':
@@ -825,7 +820,6 @@ void keyboard(unsigned char key, int x, int y) {
                      (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
                      && global_lights[_selected_light].is_on == 1){
                 global_lights[_selected_light].cut_off += 5;
-                printf("si\n");
             }
             break;
 
@@ -1027,7 +1021,7 @@ void keyboard(unsigned char key, int x, int y) {
     case '2':
         if(_selected_light != 1 && luz == ACTIVADA) {
             _selected_light = 1;
-            printf("SOL seleccionada.\n");
+            printf("SOL seleccionado.\n");
         }
         break;
 

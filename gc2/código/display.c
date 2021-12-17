@@ -116,8 +116,6 @@ void display(void) {
     GLint v_index, v, f, v_aux;
     object3d *aux_obj = _first_object;
     camera  *aux_cam = _first_camera;
-    GLfloat mcam[16];
-    vector3  cpt;
     camera *cam2;
 
     if(elemento == OBJETOCAMARA){
@@ -249,25 +247,6 @@ void display(void) {
 
             }
 
-
-
-
-            /*glColor3f(0, 1, 1);
-            for (f = 0; f < aux_obj->num_faces; f++) {
-                glBegin(GL_LINES);
-
-                v_index = aux_obj->face_table[f].vertex_table[0];
-                glVertex3d(aux_obj->vertex_table[v_index].coord.x,
-                           aux_obj->vertex_table[v_index].coord.y,
-                           aux_obj->vertex_table[v_index].coord.z);
-
-                glVertex3d(aux_obj->vertex_table[v_index].coord.x + aux_obj->face_table[f].normal.x ,
-                           aux_obj->vertex_table[v_index].coord.y + aux_obj->face_table[f].normal.y ,
-                           aux_obj->vertex_table[v_index].coord.z  + aux_obj->face_table[f].normal.x );
-
-                glEnd();
-            }*/
-
             glPopMatrix();
         }
         aux_obj = aux_obj->next;
@@ -276,8 +255,7 @@ void display(void) {
 
     /*Now each of the cameras in the list*/
 
-    /* Select the color*/
-    //glColor3f(KG_COL_NONSELECTED_R, 0.0, 0.0);
+    //las cámaras solo las dibujaremos con flat shadders
     glShadeModel(GL_FLAT);
     while (aux_cam != 0) {
         /*Si estamos proyectando lo que ve el objeto, enseñamos todas las cámaras, sino, la seleccionada no se enseña*/
@@ -311,12 +289,6 @@ void display(void) {
 
                     for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
                         v_index = aux_cam->face_table[f].vertex_table[v];
-
-                        /*if(shade == SMOOTH) {
-                            glNormal3d(aux_cam->vertex_table[v_index].normal.x,
-                                       aux_cam->vertex_table[v_index].normal.y,
-                                       aux_cam->vertex_table[v_index].normal.z);
-                        }*/
 
                         glVertex3d(aux_cam->vertex_table[v_index].coord.x,
                                    aux_cam->vertex_table[v_index].coord.y,
