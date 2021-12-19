@@ -26,7 +26,7 @@ int _selected_light = 0;
 int luz = ACTIVADA;
 
 
-material_light *ruby, *obsidian, *gold, *mat_camara, *mat_selec, *red_plastic, *mat_foco, *mat_bombilla;
+material_light *ruby, *obsidian, *gold, *mat_camara, *mat_selec, *red_plastic, *mat_foco, *copper;
 
 int modo = TRASLACION;
 int sis_referencia = LOCALES;
@@ -68,7 +68,7 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
 
     glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHT0);
     //glEnable(GL_NORMALIZE);
     //if(shade == SMOOTH){
     //glShadeModel(GL_SMOOTH);

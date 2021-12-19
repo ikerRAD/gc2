@@ -17,7 +17,7 @@ extern object3d *cam_object;
 extern camera  * _first_camera;
 extern camera * _selected_camera;
 extern camera * _object_camera;
-extern material_light *mat_camara, *mat_selec, *mat_foco, *mat_bombilla;
+extern material_light *mat_camara, *mat_selec, *mat_foco;
 
 extern objetos_luz global_lights[8];
 
@@ -173,29 +173,18 @@ void display(void) {
     if(luz == ACTIVADA) {
         //las fuentes de luz se representan con shadders flat
         glShadeModel(GL_FLAT);
+
+        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_foco->m_ambient);
+        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_foco->m_diffuse);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_foco->m_specular);
+        glMaterialfv(GL_FRONT, GL_SHININESS, mat_foco->no_shininess);
+
         for (int i = 0; i < 8; i++) {
             if (global_lights[i].type != NONE) {
                 glPushMatrix();
                 glMultMatrixf(global_lights[i].m_obj);
 
-                switch (global_lights[i].type) {
-                    case BOMBILLA:
-                        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_bombilla->m_ambient);
-                        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_bombilla->m_diffuse);
-                        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_bombilla->m_specular);
-                        glMaterialfv(GL_FRONT, GL_SHININESS, mat_bombilla->no_shininess);
-                        break;
-                    case FOCO:
-                        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_foco->m_ambient);
-                        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_foco->m_diffuse);
-                        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_foco->m_specular);
-                        glMaterialfv(GL_FRONT, GL_SHININESS, mat_foco->no_shininess);
-                        break;
-                    default:
-                        break;
-                }
-
-                if(global_lights[i].type == FOCO || global_lights[i].type == BOMBILLA){
+                if(global_lights[i].type == FOCO){
 
                     for (f = 0; f < light_object->num_faces; f++) {
                         v_aux = light_object->face_table[f].vertex_table[0];

@@ -6,7 +6,7 @@
 #include "io.h"
 //git
 extern object3d *_selected_object;
-extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec, *red_plastic, *mat_bombilla, *mat_foco;
+extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec, *red_plastic, *mat_foco, *copper;
 extern int _selected_light;
 extern camera * _selected_camera;
 extern objetos_luz global_lights[8];
@@ -149,6 +149,7 @@ void foco_camara(){
 
 void inicializar_luces(){
 
+
     global_lights[0].position[0] = 1.0f;
     global_lights[0].position[1] = 1.0f;
     global_lights[0].position[2] = 0.0f;
@@ -190,8 +191,7 @@ void inicializar_luces(){
 
     identity(global_lights[1].m_obj);
     global_lights[1].type = SOL;
-    global_lights[1].is_on = 1;
-
+    global_lights[1].is_on = 0;
 
     global_lights[2].type = FOCO_OBJETO;
     global_lights[3].type = FOCO_OBJETO;
@@ -319,8 +319,8 @@ void inicializar_materiales(){
     mat_camara      = (material_light*)malloc(sizeof(material_light));
     mat_selec       = (material_light*)malloc(sizeof(material_light));
     red_plastic         = (material_light*)malloc(sizeof(material_light));
-    mat_bombilla        = (material_light*)malloc(sizeof(material_light));
-    mat_foco    = (material_light*)malloc(sizeof(material_light));
+    mat_foco        = (material_light*)malloc(sizeof(material_light));
+    copper    = (material_light*)malloc(sizeof(material_light));
 
     ruby->m_ambient[0] = 0.1745f;
     ruby->m_ambient[1] = 0.01175f;
@@ -410,34 +410,34 @@ void inicializar_materiales(){
     red_plastic->no_shininess[0] =32.0f;
 
     //CYAN RUBBER
-    mat_bombilla->m_ambient[0] = 0.0f;
-    mat_bombilla->m_ambient[1] = 0.05f;
-    mat_bombilla->m_ambient[2] = 0.05f;
-    mat_bombilla->m_ambient[3] = 1.0f;
-    mat_bombilla->m_diffuse[0] = 0.4f;
-    mat_bombilla->m_diffuse[1] = 0.5f;
-    mat_bombilla->m_diffuse[2] = 0.5f;
-    mat_bombilla->m_diffuse[3] = 1.0f;
-    mat_bombilla->m_specular[0] = 0.04f;
-    mat_bombilla->m_specular[1] = 0.7f;
-    mat_bombilla->m_specular[2] = 0.7f;
-    mat_bombilla->m_specular[3] =  1.0f;
-    mat_bombilla->no_shininess[0] =10.0f;
-
-    //mat_foco
-    mat_foco->m_ambient[0] = 0.19125f;
-    mat_foco->m_ambient[1] = 0.0735f;
-    mat_foco->m_ambient[2] = 0.0225f;
+    mat_foco->m_ambient[0] = 0.0f;
+    mat_foco->m_ambient[1] = 0.05f;
+    mat_foco->m_ambient[2] = 0.05f;
     mat_foco->m_ambient[3] = 1.0f;
-    mat_foco->m_diffuse[0] = 0.7038f;
-    mat_foco->m_diffuse[1] = 0.27048f;
-    mat_foco->m_diffuse[2] = 0.0828f;
+    mat_foco->m_diffuse[0] = 0.4f;
+    mat_foco->m_diffuse[1] = 0.5f;
+    mat_foco->m_diffuse[2] = 0.5f;
     mat_foco->m_diffuse[3] = 1.0f;
-    mat_foco->m_specular[0] = 0.256777f;
-    mat_foco->m_specular[1] = 0.137622f;
-    mat_foco->m_specular[2] = 0.086014f;
+    mat_foco->m_specular[0] = 0.04f;
+    mat_foco->m_specular[1] = 0.7f;
+    mat_foco->m_specular[2] = 0.7f;
     mat_foco->m_specular[3] =  1.0f;
-    mat_foco->no_shininess[0] =12.8f;
+    mat_foco->no_shininess[0] =10.0f;
+
+    //copper
+    copper->m_ambient[0] = 0.19125f;
+    copper->m_ambient[1] = 0.0735f;
+    copper->m_ambient[2] = 0.0225f;
+    copper->m_ambient[3] = 1.0f;
+    copper->m_diffuse[0] = 0.7038f;
+    copper->m_diffuse[1] = 0.27048f;
+    copper->m_diffuse[2] = 0.0828f;
+    copper->m_diffuse[3] = 1.0f;
+    copper->m_specular[0] = 0.256777f;
+    copper->m_specular[1] = 0.137622f;
+    copper->m_specular[2] = 0.086014f;
+    copper->m_specular[3] =  1.0f;
+    copper->no_shininess[0] =12.8f;
 }
 
 void anadir_material(){
@@ -451,6 +451,8 @@ void cambiar_material(){
         _selected_object->material_light = gold;
     }else if (_selected_object->material_light == gold){
         _selected_object->material_light = red_plastic;
+    }else if (_selected_object->material_light == red_plastic){
+        _selected_object->material_light = copper;
     }else{
         _selected_object->material_light = ruby;
     }

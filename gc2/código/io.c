@@ -147,11 +147,10 @@ void esp_keyboard(int key, int x, int y){
     vector3 *camara;
 
     glMatrixMode(GL_MODELVIEW);
-    if(_selected_object!=0) {
-        switch (key) {
 
+        switch (key) {
             case GLUT_KEY_UP:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(up_traslacion);
                     } else if (modo == ROTACION) {
@@ -197,7 +196,7 @@ void esp_keyboard(int key, int x, int y){
                 }
                 break;
             case GLUT_KEY_DOWN:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(down_traslacion);
                     } else if (modo == ROTACION) {
@@ -243,7 +242,7 @@ void esp_keyboard(int key, int x, int y){
                 }
                 break;
             case GLUT_KEY_LEFT:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(left_traslacion);
                     } else if (modo == ROTACION) {
@@ -289,7 +288,7 @@ void esp_keyboard(int key, int x, int y){
                 }
                 break;
             case GLUT_KEY_RIGHT:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(right_traslacion);
                     } else if (modo == ROTACION) {
@@ -335,7 +334,7 @@ void esp_keyboard(int key, int x, int y){
                 }
                 break;
             case GLUT_KEY_PAGE_UP:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(repag_traslacion);
                     } else if (modo == ROTACION) {
@@ -387,7 +386,7 @@ void esp_keyboard(int key, int x, int y){
                 }
                 break;
             case GLUT_KEY_PAGE_DOWN:
-                if ((elemento == OBJETO || elemento == OBJETOCAMARA)) {
+                if ((elemento == OBJETO || elemento == OBJETOCAMARA) && _selected_object!=0) {
                     if (modo == TRASLACION) {
                         aplicar_transformaciones(avpag_traslacion);
                     } else if (modo == ROTACION) {
@@ -476,7 +475,7 @@ void esp_keyboard(int key, int x, int y){
                 break;
 
             case GLUT_KEY_F3:
-                if(luz == ACTIVADA) {
+                if(luz == ACTIVADA && _selected_object!=0) {
                     switch (global_lights[2].is_on) {
                         case 0:
                             global_lights[2].is_on = 1;
@@ -490,7 +489,7 @@ void esp_keyboard(int key, int x, int y){
                             break;
                     }
                 }else{
-                    printf("primero activa la iluminación\n");
+                    printf("primero activa la iluminación o carga un objeto\n");
                 }
                 break;
 
@@ -629,17 +628,17 @@ void esp_keyboard(int key, int x, int y){
 
         }
         /*Si el objeto es la cámara*/
-        if(elemento == OBJETOCAMARA){
+        if(elemento == OBJETOCAMARA && _selected_object!=0){
             add_camera_mode_obj(_selected_object);
             m_foco(2);
             m_foco(3);
         }else if(elemento == CAMARA){
             m_foco(3);
-        }else if(elemento == OBJETO){
+        }else if(elemento == OBJETO && _selected_object!=0){
             m_foco(2);
         }
 
-    }
+
     /*In case we have do any modification affecting the displaying of the object, we redraw them*/
     glutPostRedisplay();
 }
