@@ -11,11 +11,13 @@
 
 extern object3d *_first_object;
 extern object3d *_selected_object;
+extern object3d *light_object;
+extern object3d *cam_object;
 
 extern camera  * _first_camera;
 extern camera * _selected_camera;
 extern camera * _object_camera;
-extern material_light *mat_camara, *mat_selec;
+extern material_light *mat_camara, *mat_selec, *mat_foco, *mat_bombilla;
 
 extern objetos_luz global_lights[8];
 
@@ -168,12 +170,66 @@ void display(void) {
 
     /*First, we draw the axes*/
     //draw_axes();
-    for (int i = 0; i < 8; i++){
-        if (global_lights[i].is_on == 1){
-            glPushMatrix();
-            glMultMatrixf(global_lights[i].m_obj);
-            put_light(i);
-            glPopMatrix();
+    if(luz == ACTIVADA) {
+        //las fuentes de luz se representan con shadders flat
+        glShadeModel(GL_FLAT);
+        for (int i = 0; i < 8; i++) {
+            if (global_lights[i].type != NONE) {
+                glPushMatrix();
+                glMultMatrixf(global_lights[i].m_obj);
+
+                switch (global_lights[i].type) {
+                    case BOMBILLA:
+                        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_bombilla->m_ambient);
+                        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_bombilla->m_diffuse);
+                        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_bombilla->m_specular);
+                        glMaterialfv(GL_FRONT, GL_SHININESS, mat_bombilla->no_shininess);
+                        break;
+                    case FOCO:
+                        glMaterialfv(GL_FRONT, GL_AMBIENT, mat_foco->m_ambient);
+                        glMaterialfv(GL_FRONT, GL_DIFFUSE, mat_foco->m_diffuse);
+                        glMaterialfv(GL_FRONT, GL_SPECULAR, mat_foco->m_specular);
+                        glMaterialfv(GL_FRONT, GL_SHININESS, mat_foco->no_shininess);
+                        break;
+                    default:
+                        break;
+                }
+
+                if(global_lights[i].type == FOCO || global_lights[i].type == BOMBILLA){
+
+                    for (f = 0; f < light_object->num_faces; f++) {
+                        v_aux = light_object->face_table[f].vertex_table[0];
+
+                        if (producto_escalar(light_object->vertex_table[v_aux].coord, light_object->face_table[f].normal,
+                                             global_lights[i].m_obj, cam2->minv) > 0.0) {
+
+                            glBegin(GL_POLYGON);
+
+
+                            glNormal3d(light_object->face_table[f].normal.x,
+                                       light_object->face_table[f].normal.y,
+                                       light_object->face_table[f].normal.z);
+
+
+                            for (v = 0; v < light_object->face_table[f].num_vertices; v++) {
+                                v_index = light_object->face_table[f].vertex_table[v];
+
+                                glVertex3d(light_object->vertex_table[v_index].coord.x,
+                                           light_object->vertex_table[v_index].coord.y,
+                                           light_object->vertex_table[v_index].coord.z);
+
+                            }
+                            glEnd();
+                        }
+                    }
+
+                }
+
+                if(global_lights[i].is_on == 1) {
+                    put_light(i);
+                }
+                glPopMatrix();
+            }
         }
     }
     /*Now each of the objects in the list*/
@@ -274,25 +330,25 @@ void display(void) {
             glPushMatrix();
 
             glMultMatrixf(aux_cam->minv);
-            for (f = 0; f < aux_cam->num_faces; f++) {
+            for (f = 0; f < cam_object->num_faces; f++) {
 
-                v_aux = aux_cam->face_table[f].vertex_table[0];
+                v_aux = cam_object->face_table[f].vertex_table[0];
 
-                if(producto_escalar(aux_cam->vertex_table[v_aux].coord, aux_cam->face_table[f].normal, aux_cam->minv, cam2->minv) > 0.0) {
+                if(producto_escalar(cam_object->vertex_table[v_aux].coord, cam_object->face_table[f].normal, aux_cam->minv, cam2->minv) > 0.0) {
                     glBegin(GL_POLYGON);
 
                     if(luz == ACTIVADA) {
-                    glNormal3d(aux_cam->face_table[f].normal.x,
-                               aux_cam->face_table[f].normal.y,
-                               aux_cam->face_table[f].normal.z);
+                    glNormal3d(cam_object->face_table[f].normal.x,
+                               cam_object->face_table[f].normal.y,
+                               cam_object->face_table[f].normal.z);
                     }
 
-                    for (v = 0; v < aux_cam->face_table[f].num_vertices; v++) {
-                        v_index = aux_cam->face_table[f].vertex_table[v];
+                    for (v = 0; v < cam_object->face_table[f].num_vertices; v++) {
+                        v_index = cam_object->face_table[f].vertex_table[v];
 
-                        glVertex3d(aux_cam->vertex_table[v_index].coord.x,
-                                   aux_cam->vertex_table[v_index].coord.y,
-                                   aux_cam->vertex_table[v_index].coord.z);
+                        glVertex3d(cam_object->vertex_table[v_index].coord.x,
+                                   cam_object->vertex_table[v_index].coord.y,
+                                   cam_object->vertex_table[v_index].coord.z);
 
                     }
                     glEnd();

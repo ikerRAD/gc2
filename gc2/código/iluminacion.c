@@ -6,10 +6,11 @@
 #include "io.h"
 //git
 extern object3d *_selected_object;
-extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec;
+extern material_light *ruby, *obsidian ,*gold, *mat_camara, *mat_selec, *red_plastic, *mat_bombilla, *mat_foco;
 extern int _selected_light;
 extern camera * _selected_camera;
 extern objetos_luz global_lights[8];
+extern object3d *cam_object;
 
 
 void put_light(GLint i){
@@ -112,9 +113,9 @@ void m_foco(int f){
 }
 
 void foco_camara(){
-    global_lights[3].position[0] = (_selected_camera->max.x + _selected_camera->min.x) / 2;
-    global_lights[3].position[1] = (_selected_camera->max.y + _selected_camera->min.y) / 2;
-    global_lights[3].position[2] = (_selected_camera->max.z + _selected_camera->min.z) / 2;
+    global_lights[3].position[0] = (cam_object->max.x + cam_object->min.x) / 2;
+    global_lights[3].position[1] = (cam_object->max.y + cam_object->min.y) / 2;
+    global_lights[3].position[2] = (cam_object->max.z + cam_object->min.z) / 2;
     global_lights[3].position[3] = 1.0f;
 
     global_lights[3].ambient[0] = 1.5f;
@@ -171,7 +172,7 @@ void inicializar_luces(){
 
 
     global_lights[1].position[0] = 0.0f;
-    global_lights[1].position[1] = 5.0f;
+    global_lights[1].position[1] = 1.0f;
     global_lights[1].position[2] = 0.0f;
     global_lights[1].position[3] = 0.0f;
     global_lights[1].ambient[0] = 1.2f;
@@ -273,7 +274,7 @@ void anadir_luz(){
     global_lights[_selected_light].specular[3] = 1.0f;
 
     if(luzz == 1) {
-        global_lights[_selected_light].position[1] = 5.0;
+        global_lights[_selected_light].position[1] = 1.0;
         global_lights[_selected_light].position[3] = 0.0;
     }else{
 
@@ -282,6 +283,8 @@ void anadir_luz(){
     }
     global_lights[_selected_light].position[2] = 0.0;
     global_lights[_selected_light].position[0] = 0.0;
+
+    identity(global_lights[_selected_light].m_obj);
 
     switch (luzz){
         case 1:
@@ -295,7 +298,7 @@ void anadir_luz(){
         case 3:
             global_lights[_selected_light].type = FOCO;
 
-            global_lights[_selected_light].cut_off == 45.0f;
+            global_lights[_selected_light].cut_off = 45.0f;
             global_lights[_selected_light].spot_direction[0] = 0.0f;
             global_lights[_selected_light].spot_direction[1] = 0.0f;
             global_lights[_selected_light].spot_direction[2] = 1.0f;
@@ -304,23 +307,20 @@ void anadir_luz(){
 
     }
 
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    identity(global_lights[_selected_light].m_obj);
-    //glGetFloatv(GL_MODELVIEW_MATRIX, new.m_obj);
-    global_lights[_selected_light].is_on = 1;
-    printf("luz %d encendida\n",_selected_light+1);
-    //global_lights[_selected_light] = new;
-    put_light(_selected_light);
+    global_lights[_selected_light].is_on = 0;
+    printf("luz %d preparada, enciendela para usarla\n",_selected_light+1);
 
 }
 
 void inicializar_materiales(){
-    ruby = (material_light*)malloc(sizeof(material_light));
-    obsidian = (material_light*)malloc(sizeof(material_light));
-    gold = (material_light*)malloc(sizeof(material_light));
-    mat_camara = (material_light*)malloc(sizeof(material_light));
-    mat_selec = (material_light*)malloc(sizeof(material_light));
+    ruby            = (material_light*)malloc(sizeof(material_light));
+    obsidian        = (material_light*)malloc(sizeof(material_light));
+    gold            = (material_light*)malloc(sizeof(material_light));
+    mat_camara      = (material_light*)malloc(sizeof(material_light));
+    mat_selec       = (material_light*)malloc(sizeof(material_light));
+    red_plastic         = (material_light*)malloc(sizeof(material_light));
+    mat_bombilla        = (material_light*)malloc(sizeof(material_light));
+    mat_foco    = (material_light*)malloc(sizeof(material_light));
 
     ruby->m_ambient[0] = 0.1745f;
     ruby->m_ambient[1] = 0.01175f;
@@ -393,6 +393,51 @@ void inicializar_materiales(){
     mat_selec->m_specular[2] = 0.296648f;
     mat_selec->m_specular[3] =  0.922f ;
     mat_selec->no_shininess[0] =11.264f;
+
+    //RED PLASTIC
+    red_plastic->m_ambient[0] =0.0f;
+    red_plastic->m_ambient[1] = 0.0f;
+    red_plastic->m_ambient[2] = 0.0f;
+    red_plastic->m_ambient[3] = 1.0f ;
+    red_plastic->m_diffuse[0] = 0.5f;
+    red_plastic->m_diffuse[1] = 0.0f;
+    red_plastic->m_diffuse[2] = 0.0f;
+    red_plastic->m_diffuse[3] = 1.0f ;
+    red_plastic->m_specular[0] = 0.7f;
+    red_plastic->m_specular[1] = 0.6f;
+    red_plastic->m_specular[2] = 0.6f;
+    red_plastic->m_specular[3] =  1.0f ;
+    red_plastic->no_shininess[0] =32.0f;
+
+    //CYAN RUBBER
+    mat_bombilla->m_ambient[0] = 0.0f;
+    mat_bombilla->m_ambient[1] = 0.05f;
+    mat_bombilla->m_ambient[2] = 0.05f;
+    mat_bombilla->m_ambient[3] = 1.0f;
+    mat_bombilla->m_diffuse[0] = 0.4f;
+    mat_bombilla->m_diffuse[1] = 0.5f;
+    mat_bombilla->m_diffuse[2] = 0.5f;
+    mat_bombilla->m_diffuse[3] = 1.0f;
+    mat_bombilla->m_specular[0] = 0.04f;
+    mat_bombilla->m_specular[1] = 0.7f;
+    mat_bombilla->m_specular[2] = 0.7f;
+    mat_bombilla->m_specular[3] =  1.0f;
+    mat_bombilla->no_shininess[0] =10.0f;
+
+    //mat_foco
+    mat_foco->m_ambient[0] = 0.19125f;
+    mat_foco->m_ambient[1] = 0.0735f;
+    mat_foco->m_ambient[2] = 0.0225f;
+    mat_foco->m_ambient[3] = 1.0f;
+    mat_foco->m_diffuse[0] = 0.7038f;
+    mat_foco->m_diffuse[1] = 0.27048f;
+    mat_foco->m_diffuse[2] = 0.0828f;
+    mat_foco->m_diffuse[3] = 1.0f;
+    mat_foco->m_specular[0] = 0.256777f;
+    mat_foco->m_specular[1] = 0.137622f;
+    mat_foco->m_specular[2] = 0.086014f;
+    mat_foco->m_specular[3] =  1.0f;
+    mat_foco->no_shininess[0] =12.8f;
 }
 
 void anadir_material(){
@@ -402,11 +447,11 @@ void anadir_material(){
 void cambiar_material(){
     if (_selected_object->material_light == ruby){
         _selected_object->material_light = obsidian;
-    } else {
-        if (_selected_object->material_light == obsidian){
-            _selected_object->material_light = gold;
-        }else {
-            _selected_object->material_light = ruby;
-        }
+    } else if (_selected_object->material_light == obsidian){
+        _selected_object->material_light = gold;
+    }else if (_selected_object->material_light == gold){
+        _selected_object->material_light = red_plastic;
+    }else{
+        _selected_object->material_light = ruby;
     }
 }

@@ -8,11 +8,14 @@
 #include "transformaciones.h"
 #include "camara.h"
 #include "iluminacion.h"
+#include "load_obj.h"
 
 /** GLOBAL VARIABLES **/
 
 object3d * _first_object = 0;                /*List of objects*/
 object3d * _selected_object = 0;            /*Object currently selected*/
+object3d * cam_object = 0;
+object3d * light_object = 0;
 
 camera * _first_camera = 0;                 /*List of cameras*/
 camera * _selected_camera = 0;              /*Camera currently selected*/
@@ -23,7 +26,7 @@ int _selected_light = 0;
 int luz = ACTIVADA;
 
 
-material_light *ruby, *obsidian, *gold, *mat_camara, *mat_selec;
+material_light *ruby, *obsidian, *gold, *mat_camara, *mat_selec, *red_plastic, *mat_foco, *mat_bombilla;
 
 int modo = TRASLACION;
 int sis_referencia = LOCALES;
@@ -76,6 +79,7 @@ int main(int argc, char** argv) {
     /* this initialization has to be AFTER the creation of the window */
     initialization();
     set_transformaciones();
+    load_generic_representation();
     default_cameras();
 
     inicializar_luces();

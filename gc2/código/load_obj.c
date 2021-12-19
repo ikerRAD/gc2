@@ -7,8 +7,10 @@
 
 #define MAXLINE 200
 #define CAMERAPATH "camara.obj"
+#define LIGHTPATH "lightsource.obj"
 
 extern material_light *mat_camara;
+extern object3d *light_object, *cam_object;
 
 /*
  * Auxiliar function to process each line of the file
@@ -299,17 +301,13 @@ printf("2 pasada\n");
  * we use read_wavefront() function to reuse code and not copying the
  * whole process again
  */
-void load_camera_representation(camera *cam){
-    object3d auxiliar_object;
-    read_wavefront(CAMERAPATH, &auxiliar_object);
+void load_generic_representation(){
 
-    /*There is not error treatment because camera.obj will always be there*/
+    cam_object = (object3d *) malloc(sizeof(object3d));
+    light_object = (object3d *) malloc(sizeof(object3d));
 
-    cam->face_table = auxiliar_object.face_table;
-    cam->num_faces = auxiliar_object.num_faces;
-    cam->vertex_table = auxiliar_object.vertex_table;
-    cam->num_vertices = auxiliar_object.num_vertices;
-    cam->max = auxiliar_object.max;
-    cam->min = auxiliar_object.min;
+    read_wavefront(CAMERAPATH, cam_object);
+    read_wavefront(LIGHTPATH, light_object);
+
 
 }

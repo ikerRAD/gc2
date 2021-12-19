@@ -54,8 +54,6 @@ extern objetos_luz global_lights[8];
 extern int _selected_light;
 extern int luz;
 
-extern material_light *ruby, *obsidian;
-
 /**
  * @brief This function just prints information about the use
  * of the keys
@@ -427,13 +425,13 @@ void esp_keyboard(int key, int x, int y){
                         case TRASLACION:
                             if (global_lights[_selected_light].type == BOMBILLA ||
                                 global_lights[_selected_light].type == FOCO)
-                                aplicar_transformaciones(repag_traslacion);
+                                aplicar_transformaciones(avpag_traslacion);
                             break;
 
                         case ROTACION:
                             if (global_lights[_selected_light].type == SOL ||
                                 global_lights[_selected_light].type == FOCO)
-                                aplicar_transformaciones(repag_rotacion);
+                                aplicar_transformaciones(avpag_rotacion);
                             break;
                     }
                 }
@@ -794,7 +792,7 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_camera->proj->top = (midy - he) / 2;
             }else if(elemento == ILUMINACION &&
                     (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
-                    && global_lights[_selected_light].is_on == 1){
+                    && global_lights[_selected_light].is_on == 1 && global_lights[_selected_light].cut_off > 0){
                 global_lights[_selected_light].cut_off -= 5;
             }
             break;
@@ -818,7 +816,7 @@ void keyboard(unsigned char key, int x, int y) {
                 _selected_camera->proj->top = (midy - he) / 2;
             }else if(elemento == ILUMINACION &&
                      (global_lights[_selected_light].type == FOCO || global_lights[_selected_light].type == FOCO_OBJETO)
-                     && global_lights[_selected_light].is_on == 1){
+                     && global_lights[_selected_light].is_on == 1 && global_lights[_selected_light].cut_off < 360){
                 global_lights[_selected_light].cut_off += 5;
             }
             break;

@@ -6,7 +6,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include "load_obj.h"
 
 
 
@@ -111,7 +110,6 @@ void default_cameras(){
     cam_up.z = 0.0f;
 
     create_camera(cam_pos, cam_front, cam_up, aux);
-    load_camera_representation(aux);
 
     _first_camera = (camera*)malloc(sizeof(camera));
     _first_camera = aux;
@@ -153,7 +151,6 @@ void add_camera(){
     cam_up.z = 0.0f;
 
     create_camera(cam_pos, cam_front, cam_up, aux);
-    load_camera_representation(aux);
 
     add_camera_list(aux);
 
@@ -272,22 +269,23 @@ void centre_camera_to_obj(object3d *obj){
  */
 void modo_analisis(int x, int y){
 
-    GLfloat px, py, pz, distance;
+    if(_selected_object != 0) {
+        GLfloat px, py, pz, distance;
 
-    px = _selected_object->matrix_table->matriz[12] - _selected_camera->minv[12];
-    py = _selected_object->matrix_table->matriz[13] - _selected_camera->minv[13];
-    pz = _selected_object->matrix_table->matriz[14] - _selected_camera->minv[14];
+        px = _selected_object->matrix_table->matriz[12] - _selected_camera->minv[12];
+        py = _selected_object->matrix_table->matriz[13] - _selected_camera->minv[13];
+        pz = _selected_object->matrix_table->matriz[14] - _selected_camera->minv[14];
 
-    distance = sqrt(pow(px, 2) + pow(py, 2) + pow(pz, 2));
+        distance = sqrt(pow(px, 2) + pow(py, 2) + pow(pz, 2));
 
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(_selected_camera->minv);
-    glTranslatef(0, 0, -distance);
-    glRotatef(8.0f,-x,-y,0);
-    glTranslatef(0, 0,  distance);
-    glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
+        glMatrixMode(GL_MODELVIEW);
+        glLoadMatrixf(_selected_camera->minv);
+        glTranslatef(0, 0, -distance);
+        glRotatef(8.0f, -x, -y, 0);
+        glTranslatef(0, 0, distance);
+        glGetFloatv(GL_MODELVIEW_MATRIX, _selected_camera->minv);
 
-    matriz_inversa(_selected_camera);
-
+        matriz_inversa(_selected_camera);
+    }
 
 }

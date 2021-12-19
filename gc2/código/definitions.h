@@ -141,20 +141,23 @@ typedef struct {
  ****************************/
 
 struct matrices{
-    GLfloat matriz[16];
-    struct matrices *next;
+    GLfloat matriz[16];                 /* matrix info of matrix pointer */
+    struct matrices *next;              /* pointer to the next matrix of the list */
 };
 typedef struct matrices matrices;
 
-
+/*****************************
+ * Structure to store the    *
+ * Information of a material *
+ *****************************/
 
 typedef struct
 {
-    GLfloat m_diffuse[4];
-    GLfloat m_ambient[4];
-    GLfloat m_specular[4];
-    GLfloat m_position[4];
-    GLfloat no_shininess[1];
+    GLfloat m_diffuse[4];               /* vector of the diffusion values */
+    GLfloat m_ambient[4];               /* vector of the ambient values */
+    GLfloat m_specular[4];              /* vector of the specular values */
+    GLfloat m_position[4];              /* vector of the position values */
+    GLfloat no_shininess[1];            /* vector of the shininess values */
 } material_light;
 
 
@@ -167,63 +170,66 @@ struct object3d{
     vertex *vertex_table;               /* table of vertices */
     GLint num_faces;                    /* number of faces in the object */
     face *face_table;                   /* table of faces */
-    matrices *matrix_table;             /* table of matrixes*/
+    matrices *matrix_table;             /* table of matrices*/
     point3 min;                         /* coordinates' lower bounds */
     point3 max;                         /* coordinates' bigger bounds */
     struct object3d *next;              /* next element in the pile of objects */
-    GLint shade;
-    material_light *material_light;
+    GLint shade;                        /* shade property */
+    material_light *material_light;     /* material of the object */
 };
 
 typedef struct object3d object3d;
 
 
 /****************************
- * Structures to store a     *
- * pile of cameras       *
+ * Structure to store the   *
+ * projection information   *
  ****************************/
 
 typedef struct projection
 {
-    GLfloat angle;
-    GLfloat near;
-    GLfloat far;
-    GLfloat bottom;
-    GLfloat top;
-    GLfloat left;
-    GLfloat right;
+    GLfloat angle;                      /* angle of opening */
+    GLfloat near;                       /* near of the camera */
+    GLfloat far;                        /* far of the camera */
+    GLfloat bottom;                     /* bottom of the camera */
+    GLfloat top;                        /* top of the camera */
+    GLfloat left;                       /* left edge of the projection*/
+    GLfloat right;                      /* right edge of the projection*/
 } projection;
 
+/****************************
+ * Structure to store a     *
+ * pile of cameras          *
+ ****************************/
+
 struct camera{
-    GLint num_vertices;                 /* number of vertices in the camera*/
-    vertex *vertex_table;               /* table of vertices */
-    GLint num_faces;                    /* number of faces in the object */
-    face *face_table;                   /* table of faces */
     GLfloat m[16];                      /* matrix of the camera*/
     GLfloat minv[16];                   /* inverted matrix of the camera*/
-    point3 min;                         /* coordinates' lower bounds */
-    point3 max;                         /* coordinates' bigger bounds */
     struct camera *next;                /* next element in the pile of cameras */
     int type;                           /* projection type*/
-    projection *proj;                    /* projection data*/
-    GLint shade;
-    material_light *material_light;
+    projection *proj;                   /* projection data*/
+    GLint shade;                        /* shade property */
+    material_light *material_light;     /* material of the camera */
 };
 
 typedef struct camera camera;
 
+/****************************
+ * Structure to store a     *
+ * source of light          *
+ ****************************/
 
 typedef struct
 {
-    GLfloat diffuse[4];
-    GLfloat ambient[4];
-    GLfloat specular[4];
-    GLfloat position[4];
-    GLint is_on;
-    GLint type;
-    GLfloat spot_direction[3];
-    GLfloat m_obj[16];
-    GLfloat cut_off;
+    GLfloat diffuse[4];                 /* diffusion of the source */
+    GLfloat ambient[4];                 /* ambient of the source */
+    GLfloat specular[4];                /* specular property of the source */
+    GLfloat position[4];                /* position of the source */
+    GLint is_on;                        /* value that determines if the source is on */
+    GLint type;                         /* type of light-source */
+    GLfloat spot_direction[3];          /* if the source is a spotlight, the direction */
+    GLfloat m_obj[16];                  /* object matrix of the source to allocate it */
+    GLfloat cut_off;                    /* if the source is a spotlight, the cut off */
 }objetos_luz;
 
 
