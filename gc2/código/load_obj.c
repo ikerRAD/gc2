@@ -12,7 +12,7 @@
 extern material_light *mat_camara;
 extern object3d *light_object, *cam_object;
 
-/*
+/**
  * Auxiliar function to process each line of the file
  */
 static int sreadint(char * lerroa, int * zenbakiak) {
@@ -25,7 +25,9 @@ static int sreadint(char * lerroa, int * zenbakiak) {
     }
     return (kont);
 }
-
+/**
+ * Auxiliar function to process each line of the file
+ */
 static int sreadint2(char * lerroa, int * zenbakiak) {
     char *s = lerroa;
     int i, zbk, kont = 0;
@@ -35,11 +37,17 @@ static int sreadint2(char * lerroa, int * zenbakiak) {
 	while ((*s != ' ')&&(*s !='\0')) s++;  // jump vector normal information
         zenbakiak[kont++] = zbk;
     }
-printf("%d numbers in the line\n",kont);
+    printf("%d numbers in the line\n",kont);
     return (kont);
 }
-
-
+/**
+ * función para obtener el vector normal de una superficie dados 3 puntos ordenados
+ * @param index1 indice al punto 1
+ * @param index2 indice al punto 2
+ * @param index3 indice al punto 3
+ * @param vertex_table la tabla de vertices de donde sacar los puntos
+ * @return
+ */
 vector3 calculate_surface_normal(int index1, int index2, int index3, vertex *vertex_table){
     vector3 normal_vector;
 
@@ -59,29 +67,10 @@ vector3 calculate_surface_normal(int index1, int index2, int index3, vertex *ver
 
     return normal_vector;
 }
-
-vector3 calculate_surface_normal_2(point3 p1, point3 p2, point3 p3){
-
-    vector3 normal_vector;
-
-    vector3 u;
-    u.x = p2.x - p1.x;
-    u.y = p2.y - p1.y;
-    u.z = p2.z - p1.z;
-
-    vector3 v;
-    v.x = p3.x - p1.x;
-    v.y = p3.y - p1.y;
-    v.z = p3.z - p1.z;
-
-    normal_vector.x = (u.y * v.z) - (u.z * v.y);
-    normal_vector.y = (u.z * v.x) - (u.x * v.z);
-    normal_vector.z = (u.x * v.y) - (u.y * v.x);
-
-    return normal_vector;
-
-}
-
+/**
+ * función para calcular todos los vectores normales de un objeto 3d
+ * @param obj el objeto en cuestión
+ */
 void normal_vectors(object3d *obj){
     GLint f, v;
     GLint index1, index2, index3, vindex;
@@ -134,10 +123,6 @@ void normal_vectors(object3d *obj){
 
 
 }
-
-
-
-
 /**
  * @brief Function to read wavefront files (*.obj)
  * @param file_name Path of the file to be read
@@ -295,7 +280,6 @@ printf("2 pasada\n");
     normal_vectors(object_ptr);
     return (0);
 }
-
 /**
  * Function to load the whole representation of a new camera
  * we use read_wavefront() function to reuse code and not copying the

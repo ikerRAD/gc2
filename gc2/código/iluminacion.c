@@ -12,7 +12,10 @@ extern camera * _selected_camera;
 extern objetos_luz global_lights[8];
 extern object3d *cam_object;
 
-
+/**
+ * función para colocar las luces con los parámetros especificados
+ * @param i indice de la luz
+ */
 void put_light(GLint i){
     switch (i){
         case 0:
@@ -100,7 +103,10 @@ void put_light(GLint i){
             break;
     }
 }
-
+/**
+ * función para obtener la matriz de objeto de un foco asociado a una entidad
+ * @param f 2-foco del objeto seleccionado; 3-foco de la cámara seleccionada
+ */
 void m_foco(int f){
     int i;
     for (i = 0; i < 16; i++){
@@ -111,7 +117,10 @@ void m_foco(int f){
         }
     }
 }
-
+/**
+ * Establece los parámetros del foco asociado a la cámara.
+ * Está pensado para aplicarse en el caso de que las cámaras tengan distintas representaciones
+ */
 void foco_camara(){
     global_lights[3].position[0] = (cam_object->max.x + cam_object->min.x) / 2;
     global_lights[3].position[1] = (cam_object->max.y + cam_object->min.y) / 2;
@@ -139,14 +148,39 @@ void foco_camara(){
     global_lights[3].spot_direction[1] = 0;
     global_lights[3].spot_direction[2] = -1;
 
-    //operaciones
-    //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
-    //put_light(3);
     m_foco(3);
 
 }
+/**
+ * Función para establecer los valores por defecto del foco asociado al objeto
+ */
+void foco_obj(){
 
+    global_lights[2].ambient[0] = 1.5f;
+    global_lights[2].ambient[1] = 1.5f;
+    global_lights[2].ambient[2] = 1.5f;
+    global_lights[2].ambient[3] = 1.0f;
+
+    global_lights[2].diffuse[0] = 1.5f;
+    global_lights[2].diffuse[1] = 1.5f;
+    global_lights[2].diffuse[2] = 1.5f;
+    global_lights[2].diffuse[3] = 1.0f;
+
+    global_lights[2].specular[0] = 1.0f;
+    global_lights[2].specular[1] = 1.0f;
+    global_lights[2].specular[2] = 1.0f;
+    global_lights[2].specular[3] = 1.0f;
+
+    global_lights[2].cut_off = 45.0f;
+
+    global_lights[2].spot_direction[0] = 0.0f;
+    global_lights[2].spot_direction[1] = 0.0f;
+    global_lights[2].spot_direction[2] = 1.0f;
+
+}
+/**
+ * Inicializa los valores por defecto de las luces
+ */
 void inicializar_luces(){
 
 
@@ -203,43 +237,29 @@ void inicializar_luces(){
     }
 
     foco_camara();
+    foco_obj();
 
 }
+/**
+ * Función que cambia los valores necesarios al cambiar de objeto seleccionado
+ */
+void cambio_foco(){
 
-void foco_obj(){
     if(_selected_object!=0) {
         global_lights[2].position[0] = (_selected_object->max.x + _selected_object->min.x) / 2;
         global_lights[2].position[1] = (_selected_object->max.y + _selected_object->min.y) / 2;
         global_lights[2].position[2] = (_selected_object->max.z + _selected_object->min.z) / 2;
         global_lights[2].position[3] = 1;
 
-        global_lights[2].ambient[0] = 1.5f;
-        global_lights[2].ambient[1] = 1.5f;
-        global_lights[2].ambient[2] = 1.5f;
-        global_lights[2].ambient[3] = 1.0f;
-
-        global_lights[2].diffuse[0] = 1.5f;
-        global_lights[2].diffuse[1] = 1.5f;
-        global_lights[2].diffuse[2] = 1.5f;
-        global_lights[2].diffuse[3] = 1.0f;
-
-        global_lights[2].specular[0] = 1.0f;
-        global_lights[2].specular[1] = 1.0f;
-        global_lights[2].specular[2] = 1.0f;
-        global_lights[2].specular[3] = 1.0f;
-
-        global_lights[2].cut_off = 45.0f;
-
-        global_lights[2].spot_direction[0] = 0.0f;
-        global_lights[2].spot_direction[1] = 0.0f;
-        global_lights[2].spot_direction[2] = 1.0f;
-
         m_foco(2);
     }else{
         global_lights[2].is_on = 0;
     }
-}
 
+}
+/**
+ * función para añadir una luz a los espacios 5,6,7,8
+ */
 void anadir_luz(){
     GLint luzz, values;
 
@@ -311,7 +331,9 @@ void anadir_luz(){
     printf("luz %d preparada, enciendela para usarla\n",_selected_light+1);
 
 }
-
+/**
+ * Función que inicaliza todos los materiales disponibles
+ */
 void inicializar_materiales(){
     ruby            = (material_light*)malloc(sizeof(material_light));
     obsidian        = (material_light*)malloc(sizeof(material_light));
@@ -439,11 +461,15 @@ void inicializar_materiales(){
     copper->m_specular[3] =  1.0f;
     copper->no_shininess[0] =12.8f;
 }
-
+/**
+ * función que agreaga un material por defecto a un objeto
+ */
 void anadir_material(){
     _selected_object->material_light = ruby;
 }
-
+/**
+ * función que shiftea el material del objeto
+ */
 void cambiar_material(){
     if (_selected_object->material_light == ruby){
         _selected_object->material_light = obsidian;

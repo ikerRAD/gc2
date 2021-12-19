@@ -125,7 +125,10 @@ void better_free(object3d *tofree){
     free(tofree);
 }
 
-
+/**
+ * función para obtener una matriz identidad en el formato de opengl
+ * @param m matriz a convertir en identidad
+ */
 void identity(GLfloat *m){
     int i;
     for(i=0;i<16;i++){
@@ -699,7 +702,7 @@ void keyboard(unsigned char key, int x, int y) {
                     }
                     anadir_material();
                     _selected_object->shade = FLAT;
-                    foco_obj();
+                    cambio_foco();
 
                     printf("%s\n", KG_MSSG_FILEREAD);
                     break;
@@ -713,7 +716,7 @@ void keyboard(unsigned char key, int x, int y) {
                 if (_selected_object == 0) {
                     _selected_object = _first_object;
                 }
-                foco_obj();
+                cambio_foco();
 
                 if(elemento == CAMARA && modo_camara == ANALISIS){
                     centre_camera_to_obj(_selected_object);
@@ -767,7 +770,7 @@ void keyboard(unsigned char key, int x, int y) {
                         add_camera_mode_obj(_selected_object);
                     }
                 }
-                foco_obj();
+                cambio_foco();
 
             }
             break;
@@ -937,7 +940,7 @@ void keyboard(unsigned char key, int x, int y) {
                 if(elemento == OBJETOCAMARA){
                     add_camera_mode_obj(_selected_object);
                 }
-                foco_obj();
+                m_foco(2);
             }
         }
 
@@ -966,7 +969,7 @@ void keyboard(unsigned char key, int x, int y) {
         if(modo_camara == ANALISIS && _selected_object != 0){
             centre_camera_to_obj(_selected_object);
         }
-        foco_camara();
+        m_foco(3);
         break;
 
     case 'n'://nueva camara
@@ -974,7 +977,7 @@ void keyboard(unsigned char key, int x, int y) {
         if(modo_camara == ANALISIS && _selected_object != 0){
             centre_camera_to_obj(_selected_object);
         }
-        foco_camara();
+        m_foco(3);
         break;
 
     case 'p':// cambiar perspectiva (propia de cada cámara)

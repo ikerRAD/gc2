@@ -63,7 +63,14 @@ void reshape(int width, int height) {
 
 }
 
-
+/**
+ * función para calcular el producto escalar entre la cámara y un polígono
+ * @param uno punto del polígono
+ * @param normal vector normal del polígono
+ * @param mo  matriz de objeto del polígono
+ * @param mc  matriz de la cámara
+ * @return
+ */
 GLfloat producto_escalar(point3 uno, vector3 normal, GLfloat *mo, GLfloat *mc){
 
     vector3 n, co, cero;
@@ -82,7 +89,11 @@ GLfloat producto_escalar(point3 uno, vector3 normal, GLfloat *mo, GLfloat *mc){
 
     return (co.x * normal.x) + (co.y * normal.y) + (co.z * normal.z);
 }
-
+/**
+ * función para obtener la matriz de cambio de sistema de referencia a partir de una matriz de objeto
+ * @param mcsr matriz a convertir en la matriz de cambio de sistema de referencia
+ * @param m  matriz de objeto
+ */
 void matriz_csr(GLfloat *mcsr, GLfloat *m){
     mcsr[0] = m[0];
     mcsr[4] = m[1];

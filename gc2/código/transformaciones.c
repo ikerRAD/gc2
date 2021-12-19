@@ -50,7 +50,9 @@ vector3 *menos_escalado;
 
 vector3 *mas_escalado;
 
-
+/**
+ * función para inicializar los vectores de transformaciones
+ */
 void set_transformaciones(){
 
     up_traslacion=(vector3 *)malloc(sizeof(vector3));
@@ -113,8 +115,9 @@ void set_transformaciones(){
 
     *menos_escalado = (vector3){.x = 0.8f, .y = 0.8f, .z = 0.8f};
 }
-
-
+/**
+ * función para obtener la matriz sobre la que aplicaremos transformaciones
+ */
 void transformation_matrix(){
 
     glMatrixMode(GL_MODELVIEW);
@@ -131,7 +134,9 @@ void transformation_matrix(){
         glLoadMatrixf(global_lights[_selected_light].m_obj);
     }
 }
-
+/**
+ * función para guardar la matriz con las transformaciones aplicadas
+ */
 void set_transformation_matrix(){
 
     GLfloat m_aux[16];
@@ -155,7 +160,10 @@ void set_transformation_matrix(){
         glGetFloatv(GL_MODELVIEW_MATRIX, global_lights[_selected_light].m_obj);
     }
 }
-
+/**
+ * función para aplicar las transformaciones
+ * @param value vector de transformación que se aplica
+ */
 void aplicar_transformaciones(vector3 *value){
 
     transformation_matrix();
@@ -178,7 +186,10 @@ void aplicar_transformaciones(vector3 *value){
 
     set_transformation_matrix();
 }
-
+/**
+ * función que calcula la distancia entre la camara y el objeto seleccionados
+ * @return la distancia entre ambos
+ */
 GLfloat distancia_camara_objeto(){
     GLfloat px, py, pz;
 
